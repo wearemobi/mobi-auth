@@ -1,0 +1,13 @@
+package com.wearemobi.auth;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MobiAuthApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MobiAuthApplication.class, args);
+	}
+
+}
