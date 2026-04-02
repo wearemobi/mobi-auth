@@ -5,8 +5,8 @@ The objective is to initialize the `mobi-auth` repository with a minimalist, hig
 
 ## Implementation Plan
 - [x] This issue is the trigger for a **New SPEC**.
-- [ ] Target Directory: `docs/`
-- [ ] Target Filename: `docs/SPEC-v1.0.md`
+- [x] Target Directory: `docs/`
+- [x] Target Filename: `docs/SPEC-v1.0.md`
 
 ### Project Infrastructure
 - **Build Tool:** Gradle (Groovy DSL) for traditional, stable build management.
@@ -66,12 +66,12 @@ public record MobiUser(
 ```
 
 ## Acceptance Criteria (Definition of Done)
-- [ ] All stakeholders (or R&D) have reviewed the draft.
-- [ ] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] Project compiles with `./gradlew build`.
-- [ ] `./gradlew spotlessCheck` passes without errors.
-- [ ] Application starts and Flyway applies V1 successfully.
-- [ ] MobiUser Record is utilized for initial data loading or tests.
+- [x] All stakeholders (or R&D) have reviewed the draft.
+- [x] The document is merged into the `main` branch under the `docs/` folder.
+- [x] Project compiles with `./gradlew build`.
+- [x] `./gradlew spotlessCheck` passes without errors.
+- [x] Application starts and Flyway applies V1 successfully.
+- [x] MobiUser Record is utilized for initial data loading or tests.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
