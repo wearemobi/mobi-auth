@@ -31,7 +31,7 @@ Now that the project foundation (M1) is stable on Spring Boot 4 and Java 21, the
 - [x] The document is merged into the `main` branch under the `docs/` folder.
 - [x] Spring Authorization Server dependency configured.
 - [x] Default OIDC configuration bean implemented.
-- [ ] Login form customized with M.O.B.I.™ branding.
+- [x] Login form customized with M.O.B.I.™ branding.
 - [ ] Authorization Code flow verified with a test client (e.g., Postman or Curl).
 - [ ] PKCE enforcement validated.
 - [x] JWKS endpoint returning public keys correctly.
