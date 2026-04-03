@@ -34,7 +34,7 @@ Now that the project foundation (M1) is stable on Spring Boot 4 and Java 21, the
 - [ ] Login form customized with M.O.B.I.™ branding.
 - [ ] Authorization Code flow verified with a test client (e.g., Postman or Curl).
 - [ ] PKCE enforcement validated.
-- [ ] JWKS endpoint returning public keys correctly.
+- [x] JWKS endpoint returning public keys correctly.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
