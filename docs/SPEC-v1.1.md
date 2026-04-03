@@ -23,14 +23,14 @@ Now that the project foundation (M1) is stable on Spring Boot 4 and Java 21, the
 
 ## Implementation Plan
 - [x] This issue is the trigger for a **New SPEC**.
-- [ ] Target Directory: `docs/`
-- [ ] Target Filename: `docs/SPEC-v1.1.md`
+- [x] Target Directory: `docs/`
+- [x] Target Filename: `docs/SPEC-v1.1.md`
 
 ## Acceptance Criteria (Definition of Done)
-- [ ] All stakeholders (or R&D) have reviewed the draft.
-- [ ] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] Spring Authorization Server dependency configured.
-- [ ] Default OIDC configuration bean implemented.
+- [x] All stakeholders (or R&D) have reviewed the draft.
+- [x] The document is merged into the `main` branch under the `docs/` folder.
+- [x] Spring Authorization Server dependency configured.
+- [x] Default OIDC configuration bean implemented.
 - [ ] Login form customized with M.O.B.I.™ branding.
 - [ ] Authorization Code flow verified with a test client (e.g., Postman or Curl).
 - [ ] PKCE enforcement validated.
