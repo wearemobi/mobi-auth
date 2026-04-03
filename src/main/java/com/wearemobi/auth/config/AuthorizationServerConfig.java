@@ -1,6 +1,7 @@
 // Copyright © 2026 M.O.B.I.™ (Machine Oriented Brilliant Ideas™)
 package com.wearemobi.auth.config;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +22,6 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import java.util.UUID;
-
 @Configuration
 @EnableWebSecurity
 public class AuthorizationServerConfig {
@@ -40,7 +39,7 @@ public class AuthorizationServerConfig {
 
   @Bean
   @Order(1)
-  public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
     var authServerConfigurer = new OAuth2AuthorizationServerConfigurer();
     var endpointsMatcher = authServerConfigurer.getEndpointsMatcher();
     return http.securityMatcher(endpointsMatcher)
@@ -56,9 +55,15 @@ public class AuthorizationServerConfig {
 
   @Bean
   @Order(2)
-  public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-        .formLogin(Customizer.withDefaults())
+  public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+    return http.authorizeHttpRequests(
+            (authorize) ->
+                authorize
+                    .requestMatchers("/login", "/css/**", "/images/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .formLogin(form -> form.loginPage("/login").permitAll())
         .build();
   }
 
