@@ -1,0 +1,82 @@
+/* Copyright © 2026 M.O.B.I.™ - Minimalist B&W Identity Style */
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+}
+
+img.logo {
+    width: 96px;
+    height: 96px;
+    filter: grayscale(1) invert(1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 1rem;
+    outline: none;
+    margin-top: 1rem;
+}
+
+input::placeholder {
+    color: #444;
+}
+
+button {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: opacity 0.2s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.footer {
+    text-transform: uppercase;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.heading {
+    font-size: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Urbanist", Roboto, sans-serif;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    margin: 10pt 0 10pt 0;
+}
+
+.headline {
+    font-size: 1rem;
+    margin: 10pt 0 10pt 0;
+}
