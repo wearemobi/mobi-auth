@@ -41,12 +41,12 @@ Before any code is deployed, the following OCI resources MUST be provisioned:
 
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
-- [ ] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] M.O.B.I.™ Login form remains the primary entry point (No direct redirect to OCI UI).
-- [ ] Users managed in OCI IAM can log in successfully through M.O.B.I.™
-- [ ] Postman flow (M2) remains functional and unchanged for external clients.
-- [ ] README.md updated with Environment Variable instructions.
-- [ ] Hardcoded development credentials removed from `main`.
+- [x] The document is merged into the `main` branch under the `docs/` folder.
+- [x] M.O.B.I.™ Login form remains the primary entry point (No direct redirect to OCI UI).
+- [x] Users managed in OCI IAM can log in successfully through M.O.B.I.™
+- [x] Postman flow (M2) remains functional and unchanged for external clients.
+- [x] README.md updated with Environment Variable instructions.
+- [x] Hardcoded development credentials removed from `main`.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
