@@ -1,8 +1,5 @@
-// Copyright © 2026 M.O.B.I.™ (Machine Oriented Brilliant Ideas™)
 package com.wearemobi.auth.config;
 
-import java.util.Collections;
-import java.util.Objects;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +19,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+import java.util.Objects;
+
 @Component
 @Profile("oci")
 public class OciAuthenticationProvider implements AuthenticationProvider {
@@ -40,21 +40,23 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
   @Value("${mobi.auth.scope:urn:opc:idm:__myscopes__}")
   private String authScope;
 
+  @Value("${spring.security.oauth2.client.provider.oci.token-uri:/oauth2/v1/token}")
+  private String tokenEndpoint;
+
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     var username = authentication.getName();
     var password = Objects.requireNonNull(authentication.getCredentials()).toString();
-    var tokenEndpoint = issuerUri + "/oauth2/v1/token";
+    var tokenEndpointUri = issuerUri + tokenEndpoint;
 
-    log.debug(
-        ">> OCI:authenticate {}, scope: {}, tokenEndpoint: {}", username, authScope, tokenEndpoint);
+    log.debug(">> OCI:Requesting token for user: {}, scope: {}", username, authScope);
 
     var restTemplate = new RestTemplate();
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     headers.setBasicAuth(clientId, clientSecret);
 
-    var body = new LinkedMultiValueMap<>();
+    var body = new LinkedMultiValueMap<String, String>();
     body.add("grant_type", "password");
     body.add("username", username);
     body.add("password", password);
@@ -62,24 +64,33 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
 
     try {
       var request = new HttpEntity<>(body, headers);
-      var response = restTemplate.postForEntity(tokenEndpoint, request, String.class);
+      // We now map directly to our Record!
+      var response = restTemplate.postForEntity(tokenEndpointUri, request, OciTokenResponse.class);
 
-      if (response.getStatusCode() == HttpStatus.OK) {
-        log.debug(">> OCI:authenticate successful for username: {}", username);
-        return new UsernamePasswordAuthenticationToken(username, password, Collections.emptyList());
+      if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+        var tokenData = response.getBody();
+        log.debug("✅ OCI:Authentication successful. Token captured for user: {}", username);
+
+        // We store the OciTokenResponse as "details" so it's available in the SecurityContext
+        var authResult = new UsernamePasswordAuthenticationToken(
+                username,
+                null, // Clear password after successful auth
+                Collections.emptyList()
+        );
+        authResult.setDetails(tokenData);
+
+        return authResult;
       }
     } catch (HttpClientErrorException e) {
       var errorBody = e.getResponseBodyAsString();
-      log.error(
-          ">> OCI:authenticate HttpClientError, statusCode: {}, errorBody: {}",
-          e.getStatusCode(),
-          errorBody);
-      throw new BadCredentialsException("OCI:authenticate HttpClientError", e);
+      log.error("❌ OCI:Auth failed [{}]: {}", e.getStatusCode(), errorBody);
+      throw new BadCredentialsException("OCI Identity Provider rejected credentials.");
     } catch (Exception e) {
-      log.error(">> OCI:authenticate Exception , message: {}", e.getMessage());
-      throw new BadCredentialsException("OCI:authenticate Exception", e);
+      log.error("❌ OCI:Critical system error during authentication: {}", e.getMessage());
+      throw new BadCredentialsException("Internal Auth Bridge Failure.");
     }
-    throw new BadCredentialsException("OCI:authenticate UnknownError");
+
+    throw new BadCredentialsException("Could not complete authentication with OCI.");
   }
 
   @Override
