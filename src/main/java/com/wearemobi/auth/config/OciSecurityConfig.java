@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -22,7 +23,7 @@ public class OciSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
     http.authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/login", "/css/**", "/images/**", "/error")
@@ -34,13 +35,13 @@ public class OciSecurityConfig {
                 form.loginPage("/login") // Ondeando el Jolly Roger B&W
                     .defaultSuccessUrl("/home", true)
                     .permitAll())
-        .logout(logout -> logout.permitAll());
+        .logout(LogoutConfigurer::permitAll);
 
     return http.build();
   }
 
   @Bean
-  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+  public AuthenticationManager authManager(HttpSecurity http) {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.authenticationProvider(ociAuthenticationProvider);
