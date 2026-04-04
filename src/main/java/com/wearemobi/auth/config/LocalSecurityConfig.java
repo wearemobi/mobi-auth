@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,9 +25,10 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 @Configuration
 @EnableWebSecurity
-public class AuthorizationServerConfig {
+@Profile("local")
+public class LocalSecurityConfig {
 
-  private static final Logger log = LoggerFactory.getLogger(AuthorizationServerConfig.class);
+  private static final Logger log = LoggerFactory.getLogger(LocalSecurityConfig.class);
 
   @Value("${mobi.auth.client-id}")
   private String clientId;
