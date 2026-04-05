@@ -109,12 +109,13 @@ button:hover {
     text-transform: uppercase;
 }
 
-.logout-link {
-    color: #444;
+.button-link {
+    color: #999;
     text-decoration: none;
     font-size: 0.8rem;
     font-weight: bold;
 }
+
 .footer a {
     color: #666;
     text-decoration: none;

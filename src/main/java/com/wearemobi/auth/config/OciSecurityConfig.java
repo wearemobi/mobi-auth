@@ -23,10 +23,10 @@ public class OciSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
     http.authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/login", "/css/**", "/images/**", "/error")
+                auth.requestMatchers("/login", "/register", "/css/**", "/images/**", "/error")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
@@ -41,7 +41,7 @@ public class OciSecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+  public AuthenticationManager authManager(HttpSecurity http) {
     var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.authenticationProvider(ociAuthenticationProvider);
     return authenticationManagerBuilder.build();

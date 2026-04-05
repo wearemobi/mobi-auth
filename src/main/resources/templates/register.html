@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.O.B.I.™ | Create Account</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments :: mobi-logo}"></div>
+
+    <h1 class="heading">Create Account</h1>
+    <div class="headline">Sign up and create your M.O.B.I.™ account to access our product and services</div>
+
+    <form th:action="@{/register}" method="post" class="flex-col">
+
+        <input type="text" name="displayName" placeholder="Full Name" required autofocus />
+
+        <input type="email" name="username" placeholder="Email Address" required />
+
+        <input type="password" name="password" placeholder="Passphrase" required />
+
+        <div class="flex-col">
+            <button type="submit">CONTINUE</button>
+            <a th:href="@{/login}" class="button-link">ALREADY A MEMBER? SIGN IN</a>
+        </div>
+
+    </form>
+
+    <div th:replace="~{fragments :: mobi-footer}"></div>
+</div>
+</body>
+</html>

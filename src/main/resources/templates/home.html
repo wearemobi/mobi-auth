@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.O.B.I.™ | Identity</title>
+    <title>M.O.B.I.™ | Account</title>
     <link rel="stylesheet" th:href="@{/css/global.css}">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <div class="flex-col">
         <button th:onclick="|location.href='@{/profile}'|">VIEW IDENTITY</button>
-        <a th:href="@{/logout}" class="logout-link">SIGN OUT</a>
+        <a th:href="@{/logout}" class="button-link">SIGN OUT</a>
     </div>
 
     <div th:replace="~{fragments :: mobi-footer}"></div>
