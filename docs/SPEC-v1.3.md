@@ -35,10 +35,10 @@ Now that **M.O.B.I.™ Auth** successfully authenticates against OCI IAM (Hito M
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] `OciAuthenticationProvider` no longer just returns a boolean success, but returns a Principal containing the OCI Access Token.
-- [ ] Successful login redirects to a landing page (e.g., `/home`) instead of the current 404/Whitelabel.
-- [ ] A protected controller can retrieve the "Access Token" from the session for verification.
-- [ ] No hardcoded logic for token parsing (use Jackson/Lombok).
+- [x] `OciAuthenticationProvider` no longer just returns a boolean success, but returns a Principal containing the OCI Access Token.
+- [x] Successful login redirects to a landing page (e.g., `/home`) instead of the current 404/Whitelabel.
+- [x] A protected controller can retrieve the "Access Token" from the session for verification.
+- [x] No hardcoded logic for token parsing (use Jackson/Lombok).
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
