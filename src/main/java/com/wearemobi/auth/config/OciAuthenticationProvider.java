@@ -1,5 +1,8 @@
+// Copyright © 2026 M.O.B.I.™ (Machine Oriented Brilliant Ideas™)
 package com.wearemobi.auth.config;
 
+import java.util.Collections;
+import java.util.Objects;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Collections;
-import java.util.Objects;
 
 @Component
 @Profile("oci")
@@ -72,13 +72,12 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
         log.debug("✅ OCI:Authentication successful. Token captured for user: {}", username);
 
         // We store the OciTokenResponse as "details" so it's available in the SecurityContext
-        var authResult = new UsernamePasswordAuthenticationToken(
+        var authResult =
+            new UsernamePasswordAuthenticationToken(
                 username,
                 null, // Clear password after successful auth
-                Collections.emptyList()
-        );
+                Collections.emptyList());
         authResult.setDetails(tokenData);
-
         return authResult;
       }
     } catch (HttpClientErrorException e) {
