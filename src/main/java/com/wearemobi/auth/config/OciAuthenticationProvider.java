@@ -37,17 +37,16 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
   @Value("${spring.security.oauth2.client.registration.oci.client-secret}")
   private String clientSecret;
 
-  @Value("${mobi.auth.scope:urn:opc:idm:__myscopes__}")
+  @Value("${mobi.auth.scope}")
   private String authScope;
 
   @Value("${spring.security.oauth2.client.provider.oci.token-uri:/oauth2/v1/token}")
-  private String tokenEndpoint;
+  private String tokenEndpointUri;
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     var username = authentication.getName();
     var password = Objects.requireNonNull(authentication.getCredentials()).toString();
-    var tokenEndpointUri = issuerUri + tokenEndpoint;
 
     log.debug(">> OCI:Requesting token for user: {}, scope: {}", username, authScope);
 
