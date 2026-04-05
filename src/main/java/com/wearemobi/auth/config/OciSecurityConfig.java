@@ -23,7 +23,7 @@ public class OciSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
+  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/login", "/css/**", "/images/**", "/error")
@@ -32,18 +32,17 @@ public class OciSecurityConfig {
                     .authenticated())
         .formLogin(
             form ->
-                form.loginPage("/login") // Ondeando el Jolly Roger B&W
-                    .defaultSuccessUrl("/home", true)
-                    .permitAll())
-        .logout(LogoutConfigurer::permitAll);
+                // Jolly Roger B&W
+                form.loginPage("/login").defaultSuccessUrl("/home", true).permitAll())
+        .logout(LogoutConfigurer::permitAll)
+        .authenticationProvider(ociAuthenticationProvider);
 
     return http.build();
   }
 
   @Bean
-  public AuthenticationManager authManager(HttpSecurity http) {
-    AuthenticationManagerBuilder authenticationManagerBuilder =
-        http.getSharedObject(AuthenticationManagerBuilder.class);
+  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.authenticationProvider(ociAuthenticationProvider);
     return authenticationManagerBuilder.build();
   }
