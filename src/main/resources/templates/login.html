@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.O.B.I.™ | Identity</title>
-    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <title>M.O.B.I.™ | Sign in</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
 </head>
 <body>
 <div class="container">
-    <img src="https://wearemobi.com/icon-light.svg" class="logo" alt="M.O.B.I. Logo">
+    <div th:replace="~{fragments :: mobi-logo}"></div>
 
     <h1 class="heading">M.O.B.I. Account</h1>
     <div class="headline">Login to manage all your MOBI product and services</div>
@@ -18,9 +18,7 @@
         <button type="submit">CONTINUE</button>
     </form>
 
-    <div class="footer">
-        Copyright © 2026 <strong>M.O.B.I.™</strong> (Machine Oriented Brilliant Ideas™)
-    </div>
+    <div th:replace="~{fragments :: mobi-footer}"></div>
 </div>
 </body>
 </html>
