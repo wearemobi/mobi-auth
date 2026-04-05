@@ -27,10 +27,10 @@ To scale the M.O.B.I.™ fleet, we need an automated way to onboard new users. *
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] A new user can be created directly from the M.O.B.I.™ interface without manual OCI Console intervention.
-- [ ] The registration form is consistent with the B&W Global Branding.
-- [ ] Backend validation ensures all required fields are sent to OCI correctly.
-- [ ] Integration tests verify the connection between the Register form and the OCI SCIM API.
+- [x] A new user can be created directly from the M.O.B.I.™ interface without manual OCI Console intervention.
+- [x] The registration form is consistent with the B&W Global Branding.
+- [x] Backend validation ensures all required fields are sent to OCI correctly.
+- [x] Integration tests verify the connection between the Register form and the OCI SCIM API.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
