@@ -1,4 +1,4 @@
-# <img src="https://wearemobi.com/icon-light.svg" width="24" height="24" valign="middle"> M.O.B.I.™ · SPEC or DOCS change request v1.0
+# <img src="https://wearemobi.com/icon-light.svg" width="24" height="24" valign="middle"> M.O.B.I.™ · SPEC v1.4: UI & Visual Identity
 
 ## Context & Goal
 Following the successful capture of OCI tokens in **v1.3**, the application currently responds with raw JSON. The goal of **SPEC v1.4** is to implement a professional **Black & White (B&W)** interface using **Thymeleaf** and the existing `global.css`. This will provide users with a visual dashboard to view their identity and session status.
@@ -29,10 +29,10 @@ Following the successful capture of OCI tokens in **v1.3**, the application curr
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] Users are redirected to a visual `/home` page instead of a JSON response after login.
-- [ ] Navigation between Login, Home, and Profile is seamless and follows the B&W branding.
-- [ ] Logout functionality is visually integrated and redirects back to the Login port.
-- [ ] All pages share the same `global.css` and a common header fragment.
+- [x] Users are redirected to a visual `/home` page instead of a JSON response after login.
+- [x] Navigation between Login, Home, and Profile is seamless and follows the B&W branding.
+- [x] Logout functionality is visually integrated and redirects back to the Login port.
+- [x] All pages share the same `global.css` and a common header fragment.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
