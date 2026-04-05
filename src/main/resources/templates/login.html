@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,12 +11,19 @@
     <div th:replace="~{fragments :: mobi-logo}"></div>
 
     <h1 class="heading">M.O.B.I. Account</h1>
-    <div class="headline">Login to manage all your MOBI product and services</div>
+    <div class="headline">Sign in to manage all your MOBI product and services</div>
     <form th:action="@{/login}" method="post">
         <input type="text" name="username" placeholder="User ID" required autofocus />
         <input type="password" name="password" placeholder="Passphrase" required />
-        <button type="submit">CONTINUE</button>
+
+        <div class="flex-col">
+            <button type="submit">SIGN IN</button>
+            <a th:href="@{/register}" class="button-link">NEW TO MOBI? CREATE ACCOUNT</a>
+        </div>
+
     </form>
+
+
 
     <div th:replace="~{fragments :: mobi-footer}"></div>
 </div>
