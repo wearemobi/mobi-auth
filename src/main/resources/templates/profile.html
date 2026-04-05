@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.O.B.I.™ | Profile</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+<body>
+<div class="container">
+
+    <div th:replace="~{fragments :: mobi-logo}"></div>
+    <h1 class="heading">Identity Profile</h1>
+    <div class="headline" th:text="${username}">user@mobi.com</div>
+
+    <div style="text-align: left; font-size: 0.7rem; color: #888; background: #111; padding: 15px; border: 1px solid #333; margin-top: 20px; position: relative;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong style="color: #888;">ACCESS_TOKEN</strong>
+            <span id="copy-btn" onclick="copyToken()" style="cursor: pointer; color: #fff; border: 1px solid #fff; padding: 2px 6px; font-size: 0.6rem; font-weight: bold;">
+            COPY
+        </span>
+        </div>
+
+        <p id="token-text" class="token" th:text="${accessToken}">...</p>
+    </div>
+
+    <script>
+        function copyToken() {
+            const token = document.getElementById('token-text').innerText;
+            navigator.clipboard.writeText(token).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerText = 'COPIED!';
+                btn.style.background = '#fff';
+                btn.style.color = '#000';
+                setTimeout(() => {
+                    btn.innerText = 'COPY';
+                    btn.style.background = 'transparent';
+                    btn.style.color = '#fff';
+                }, 2000);
+            });
+        }
+    </script>
+
+    <button style="margin-top: 2rem;" th:onclick="|location.href='@{/home}'|">RETURN TO HOME</button>
+
+    <div th:replace="~{fragments :: mobi-footer}"></div>
+</div>
+</body>
+</html>

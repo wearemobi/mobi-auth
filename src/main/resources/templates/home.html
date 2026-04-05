@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.O.B.I.™ | Identity</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments :: mobi-logo}"></div>
+
+    <h1 class="heading">All Blue!</h1>
+    <div class="headline">Welcome back, <strong th:text="${username}">User</strong>.</div>
+
+    <div class="bordered-container">
+        <p>STATUS: <span th:text="${status}">OK</span></p>
+        <p>IDENTITY VALID FOR: <span th:text="${expiresIn}">3600</span> seconds</p>
+    </div>
+
+    <div class="flex-col">
+        <button th:onclick="|location.href='@{/profile}'|">VIEW IDENTITY</button>
+        <a th:href="@{/logout}" class="logout-link">SIGN OUT</a>
+    </div>
+
+    <div th:replace="~{fragments :: mobi-footer}"></div>
+</div>
+</body>
+</html>

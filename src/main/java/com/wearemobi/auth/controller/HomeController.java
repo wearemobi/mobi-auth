@@ -6,34 +6,43 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-@RestController
+@Controller
 public class HomeController {
 
   @GetMapping("/home")
-  public Map<String, Object> home() {
-    var auth =
-        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated"));
+  public String home(Model model) {
+    var auth = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated"));
 
-    var tokenData =
-        Optional.ofNullable(auth.getDetails())
+    var tokenData = Optional.ofNullable(auth.getDetails())
             .filter(OciTokenResponse.class::isInstance)
             .map(OciTokenResponse.class::cast)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Missing OCI token details"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Missing OCI token details"));
 
-    return Map.of(
-        "message", "All Blue! Welcome to M.O.B.I.™!",
-        "user", auth.getName(),
-        "status", "AUTH_VIA_MOBI_ON_OCI",
-        "token_type", tokenData.tokenType(),
-        "expires_in", tokenData.expiresIn());
+    model.addAttribute("username", auth.getName());
+    model.addAttribute("status", "AUTH_VIA_MOBI_ON_OCI");
+    model.addAttribute("tokenType", tokenData.tokenType());
+    model.addAttribute("expiresIn", tokenData.expiresIn());
+
+    return "home";
+  }
+
+  @GetMapping("/profile")
+  public String profile(Model model) {
+    var auth = SecurityContextHolder.getContext().getAuthentication();
+    var tokenData = (OciTokenResponse) auth.getDetails();
+
+    model.addAttribute("username", auth.getName());
+    model.addAttribute("accessToken", tokenData.accessToken());
+    model.addAttribute("idToken", tokenData.idToken());
+    model.addAttribute("expiresIn", tokenData.expiresIn());
+
+    return "profile";
   }
 }

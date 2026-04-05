@@ -1,0 +1,135 @@
+/* Copyright © 2026 M.O.B.I.™ - Minimalist B&W Identity Style */
+
+/* Base Elements */
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+}
+
+/* Layout Containers */
+.container {
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+    text-align: center;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bordered-container {
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+}
+
+.bordered-container p {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.bordered-container span {
+    color: #fff;
+}
+
+/* Typography & Branding */
+.heading {
+    margin: 10pt 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Urbanist", Roboto, sans-serif;
+    font-size: 2rem;
+    text-transform: uppercase;
+}
+
+.headline {
+    margin: 10pt 0;
+    font-size: 1rem;
+}
+
+img.logo {
+    width: 96px;
+    height: 96px;
+    filter: grayscale(1) invert(1);
+}
+
+/* Forms & Inputs */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+input {
+    margin-top: 1rem;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+}
+
+input::placeholder {
+    color: #444;
+}
+
+button {
+    margin-top: 1rem;
+    padding: 12px;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Navigation & Links */
+.footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 3rem 0;
+    color: #444;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.logout-link {
+    color: #444;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.footer a {
+    color: #666;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Utilities */
+.token {
+    height: 420px;
+    margin: 0;
+    color: #444;
+    word-break: break-all;
+    overflow-y: auto;
+}
