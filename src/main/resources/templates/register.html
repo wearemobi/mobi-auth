@@ -13,19 +13,20 @@
     <h1 class="heading">Create Account</h1>
     <div class="headline">Sign up and create your M.O.B.I.™ account to access our product and services</div>
 
+    <div th:if="${error}" style="color: #ff4444; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #ff4444; padding: 10px; background: rgba(255,68,68,0.05); text-transform: uppercase; letter-spacing: 1px;">
+        <div>ERROR</div>
+        <div th:text="${error}"></div>
+    </div>
+
     <form th:action="@{/register}" method="post" class="flex-col">
-
         <input type="text" name="displayName" placeholder="Full Name" required autofocus />
-
         <input type="email" name="username" placeholder="Email Address" required />
-
         <input type="password" name="password" placeholder="Passphrase" required />
 
         <div class="flex-col">
             <button type="submit">CONTINUE</button>
             <a th:href="@{/login}" class="button-link">ALREADY A MEMBER? SIGN IN</a>
         </div>
-
     </form>
 
     <div th:replace="~{fragments :: mobi-footer}"></div>

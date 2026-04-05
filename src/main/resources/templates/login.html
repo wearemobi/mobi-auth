@@ -12,6 +12,16 @@
 
     <h1 class="heading">M.O.B.I. Account</h1>
     <div class="headline">Sign in to manage all your MOBI product and services</div>
+
+    <div th:if="${param.error}" style="color: #ff4444; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #ff4444; padding: 10px; background: rgba(255,68,68,0.05); text-transform: uppercase; letter-spacing: 1px;">
+        <div>ERROR</div>
+        <div th:text="${error}"></div>
+    </div>
+
+    <div th:if="${message}" style="color: #00ff00; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #00ff00; padding: 10px; background: rgba(0,255,0,0.05); text-transform: uppercase; letter-spacing: 1px;">
+        <span th:text="${message}"></span>
+    </div>
+
     <form th:action="@{/login}" method="post">
         <input type="text" name="username" placeholder="User ID" required autofocus />
         <input type="password" name="password" placeholder="Passphrase" required />
