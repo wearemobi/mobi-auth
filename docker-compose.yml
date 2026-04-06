@@ -1,0 +1,52 @@
+services:
+  mobi-auth:
+    build: .
+    container_name: mobi-auth
+    ports:
+      - "9090:9090"
+    networks:
+      - mobi-net
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-oci}
+      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mobi-db:5432/${MOBI_AUTH_DB_NAME:-mobi_auth}
+      - SPRING_DATASOURCE_USERNAME=${MOBI_AUTH_DB_USER:-mobi_user}
+      - SPRING_DATASOURCE_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+      - MOBI_JWT_SECRET=${MOBI_JWT_SECRET}
+      - MOBI_JWT_EXPIRATION_HOURS=${MOBI_JWT_EXPIRATION_HOURS:-24}
+      - MOBI_AUTH_CLIENT_ID=${MOBI_AUTH_CLIENT_ID}
+      - MOBI_AUTH_CLIENT_SECRET=${MOBI_AUTH_CLIENT_SECRET}
+      - MOBI_M2M_CLIENT_ID=${MOBI_M2M_CLIENT_ID}
+      - MOBI_M2M_CLIENT_SECRET=${MOBI_M2M_CLIENT_SECRET}
+      - MOBI_OCI_ISSUER_URI=${MOBI_OCI_ISSUER_URI}
+      - MOBI_OCI_SCIM_URL=${MOBI_OCI_SCIM_URL}
+      - MOBI_OCI_TOKEN_URI=${MOBI_OCI_TOKEN_URI}
+    depends_on:
+      mobi-db:
+        condition: service_healthy
+
+  mobi-db:
+    image: postgres:15-alpine
+    container_name: mobi-db
+    networks:
+      - mobi-net
+    environment:
+      - POSTGRES_DB=${MOBI_AUTH_DB_NAME:-mobi_auth}
+      - POSTGRES_USER=${MOBI_AUTH_DB_USER:-mobi_user}
+      - POSTGRES_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - mobi_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mobi-net:
+    driver: bridge
+
+volumes:
+  mobi_db_data:
