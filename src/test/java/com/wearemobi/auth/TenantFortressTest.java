@@ -53,7 +53,7 @@ class TenantFortressTest {
     // ---------------------------------------------------------
     // Instantiate service with a secure test key (>32 bytes)
     String testSecret = "SuperSecretTestKeyForMobiAuth2026!!!";
-    var jwtService = new JwtService(testSecret, 1);
+    var jwtService = new JwtService(testSecret, 1, 1);
 
     var mobiUser = UserMapper.toDomain(foundUserOpt.get());
     String token = jwtService.generateToken(mobiUser);
