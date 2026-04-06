@@ -24,21 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(
-    properties = {
-      "MOBI_OCI_SCIM_URL=http://dummy",
-      "MOBI_OCI_TOKEN_URI=http://dummy",
-      "MOBI_OCI_ISSUER_URI=http://dummy",
-      "MOBI_AUTH_CLIENT_ID=dummy",
-      "MOBI_AUTH_CLIENT_SECRET=dummy",
-      "MOBI_M2M_CLIENT_ID=dummy",
-      "MOBI_M2M_CLIENT_SECRET=dummy",
-      "MOBI_JWT_SECRET=SuperSecretMobiKey2026NeedToBeLongEnough32Bytes",
-      "MOBI_JWT_EXPIRATION_HOURS=24",
-      "MOBI_JWT_REFRESH-EXPIRATION-DAYS=7"
-    })
-@AutoConfigureMockMvc
-class AuthRefreshSystemTest {
+class AuthRefreshSystemTest extends BaseSystemTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private UserRepository userRepository;
@@ -49,12 +35,12 @@ class AuthRefreshSystemTest {
   @DisplayName("Check 3: Should exchange Refresh Token for a fresh Access Token")
   void shouldReturnNewAccessTokenWhenRefreshTokenIsValid() throws Exception {
     // 1. ARRANGE: Creamos un usuario real en H2
-    var email = "logan@mobi.com";
+    var email = "acme@mobi.com";
     var user = new UserEntity();
     user.setEmail(email);
     user.setOrgId(UUID.randomUUID());
-    user.setTenantId("logan");
-    user.setOrgName("LOGAN CARNICERIA");
+    user.setTenantId("acme");
+    user.setOrgName("ACME CORP");
     user.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
     userRepository.save(user);
 

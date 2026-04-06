@@ -32,7 +32,11 @@ public class OciTokenService {
 
   public String getM2mToken() {
     // Verificación de configuración antes de la petición a Oracle
-    log.debug("Initiating M2M token request to OCI. URL=[{}], ClientID=[{}], Scope=[{}]", tokenUrl, clientId, scope);
+    log.debug(
+        "Initiating M2M token request to OCI. URL=[{}], ClientID=[{}], Scope=[{}]",
+        tokenUrl,
+        clientId,
+        scope);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -56,7 +60,8 @@ public class OciTokenService {
       return null;
     } catch (Exception e) {
       log.error("OCI M2M token retrieval failed. Details: {}", e.getMessage());
-      throw new RuntimeException("Failed to retrieve M2M token from OCI Identity Provider: " + e.getMessage());
+      throw new RuntimeException(
+          "Failed to retrieve M2M token from OCI Identity Provider: " + e.getMessage());
     }
   }
 }

@@ -19,104 +19,105 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
-    private final PasswordEncoder passwordEncoder;
+  private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+  private final JwtService jwtService;
+  private final UserRepository userRepository;
+  private final ClientRepository clientRepository;
+  private final PasswordEncoder passwordEncoder;
 
-    public AuthController(
-            JwtService jwtService,
-            UserRepository userRepository,
-            ClientRepository clientRepository,
-            PasswordEncoder passwordEncoder) {
-        this.jwtService = jwtService;
-        this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
-        this.passwordEncoder = passwordEncoder;
+  public AuthController(
+      JwtService jwtService,
+      UserRepository userRepository,
+      ClientRepository clientRepository,
+      PasswordEncoder passwordEncoder) {
+    this.jwtService = jwtService;
+    this.userRepository = userRepository;
+    this.clientRepository = clientRepository;
+    this.passwordEncoder = passwordEncoder;
+  }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+    String refreshToken = request.get("refreshToken");
+
+    if (refreshToken == null || refreshToken.isBlank()) {
+      return ResponseEntity.badRequest().body(Map.of("error", "Refresh token missing"));
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
+    try {
+      var claims = jwtService.extractClaims(refreshToken);
 
-        if (refreshToken == null || refreshToken.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Refresh token missing"));
-        }
+      if (!"REFRESH".equals(claims.get("type"))) {
+        log.warn(
+            "Invalid token type. Attempted use of ACCESS token as REFRESH token by subject: {}",
+            claims.getSubject());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(Map.of("error", "Invalid token type"));
+      }
 
-        try {
-            var claims = jwtService.extractClaims(refreshToken);
+      String email = claims.getSubject();
 
-            if (!"REFRESH".equals(claims.get("type"))) {
-                log.warn("Invalid token type. Attempted use of ACCESS token as REFRESH token by subject: {}", claims.getSubject());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Invalid token type"));
-            }
+      return userRepository
+          .findByEmail(email)
+          .map(UserMapper::toDomain)
+          .map(
+              user -> {
+                String newAccessToken = jwtService.generateToken(user);
+                log.debug("Access token successfully refreshed for tenant: {}", user.tenantId());
+                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+              })
+          .orElseGet(
+              () -> {
+                log.error("User [{}] not found during refresh token validation.", email);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+              });
 
-            String email = claims.getSubject();
-
-            return userRepository
-                    .findByEmail(email)
-                    .map(UserMapper::toDomain)
-                    .map(
-                            user -> {
-                                String newAccessToken = jwtService.generateToken(user);
-                                log.debug("Access token successfully refreshed for tenant: {}", user.tenantId());
-                                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-                            })
-                    .orElseGet(
-                            () -> {
-                                log.error("User [{}] not found during refresh token validation.", email);
-                                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                            });
-
-        } catch (Exception e) {
-            log.error("Refresh token validation failed: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Token expired or invalid"));
-        }
+    } catch (Exception e) {
+      log.error("Refresh token validation failed: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("error", "Token expired or invalid"));
     }
+  }
 
-    @PostMapping("/token")
-    public ResponseEntity<?> getM2MToken(@RequestBody Map<String, String> request) {
-        String clientId = request.get("clientId");
-        String clientSecret = request.get("clientSecret");
+  @PostMapping("/token")
+  public ResponseEntity<?> getM2MToken(@RequestBody Map<String, String> request) {
+    String clientId = request.get("clientId");
+    String clientSecret = request.get("clientSecret");
 
-        log.debug("Processing M2M token request for clientId: [{}]", clientId);
+    log.debug("Processing M2M token request for clientId: [{}]", clientId);
 
-        return clientRepository
-                .findByClientId(clientId)
-                .map(
-                        client -> {
-                            boolean matches = passwordEncoder.matches(clientSecret, client.getClientSecretHash());
+    return clientRepository
+        .findByClientId(clientId)
+        .map(
+            client -> {
+              boolean matches = passwordEncoder.matches(clientSecret, client.getClientSecretHash());
 
-                            if (!matches) {
-                                log.warn("Authentication failed: Invalid credentials for clientId [{}]", clientId);
-                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                            }
+              if (!matches) {
+                log.warn("Authentication failed: Invalid credentials for clientId [{}]", clientId);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+              }
 
-                            // Creación de usuario de sistema sintético para el token M2M
-                            var systemUser =
-                                    new MobiUser(
-                                            client.getId(),
-                                            client.getAppName() + "@mobi.systems",
-                                            null,
-                                            Role.MOBI_SYSTEM_AGENT.name(),
-                                            client.getTenantId(),
-                                            client.getOrgId().toString(),
-                                            client.getAppName());
+              // Creación de usuario de sistema sintético para el token M2M
+              var systemUser =
+                  new MobiUser(
+                      client.getId(),
+                      client.getAppName() + "@mobi.systems",
+                      null,
+                      Role.MOBI_SYSTEM_AGENT.name(),
+                      client.getTenantId(),
+                      client.getOrgId().toString(),
+                      client.getAppName());
 
-                            String token = jwtService.generateToken(systemUser);
-                            log.info("M2M token successfully generated for clientId: [{}]", clientId);
+              String token = jwtService.generateToken(systemUser);
+              log.info("M2M token successfully generated for clientId: [{}]", clientId);
 
-                            return ResponseEntity.ok(Map.of(
-                                    "accessToken", token,
-                                    "tokenType", "Bearer",
-                                    "expiresIn", 86400
-                            ));
-                        })
-                .orElseGet(
-                        () -> {
-                            log.warn("Authentication failed: ClientId [{}] not found in database.", clientId);
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                        });
-    }
+              return ResponseEntity.ok(
+                  Map.of("accessToken", token, "tokenType", "Bearer", "expiresIn", 86400));
+            })
+        .orElseGet(
+            () -> {
+              log.warn("Authentication failed: ClientId [{}] not found in database.", clientId);
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            });
+  }
 }

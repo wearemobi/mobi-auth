@@ -14,29 +14,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(
-    properties = {
-      "MOBI_OCI_SCIM_URL=http://dummy",
-      "MOBI_OCI_TOKEN_URI=http://dummy",
-      "MOBI_OCI_ISSUER_URI=http://dummy",
-      "MOBI_AUTH_CLIENT_ID=dummy",
-      "MOBI_AUTH_CLIENT_SECRET=dummy",
-      "MOBI_M2M_CLIENT_ID=dummy",
-      "MOBI_M2M_CLIENT_SECRET=dummy",
-      "MOBI_JWT_SECRET=SuperSecretMobiKey2026NeedToBeLongEnough32Bytes",
-      "MOBI_JWT_EXPIRATION_HOURS=24",
-      "MOBI_JWT_REFRESH-EXPIRATION-DAYS=7"
-    })
-@AutoConfigureMockMvc
-class AuthM2MSystemTest {
+class AuthM2MSystemTest extends BaseSystemTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ClientRepository clientRepository;
@@ -55,7 +39,7 @@ class AuthM2MSystemTest {
     agent.setClientSecretHash(
         passwordEncoder.encode(rawSecret)); // <--- El secreto se guarda hasheado
     agent.setOrgId(UUID.randomUUID());
-    agent.setTenantId("logan");
+    agent.setTenantId("acme");
     agent.setAppName("AGENTIC_SUPPORT");
     clientRepository.save(agent);
 

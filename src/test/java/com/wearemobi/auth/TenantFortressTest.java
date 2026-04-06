@@ -30,22 +30,22 @@ class TenantFortressTest {
     // 1. ARRANGE & ACT: Check 1 - JPA Persistence
     // ---------------------------------------------------------
     var orgId = UUID.randomUUID();
-    var logan = new UserEntity();
-    logan.setEmail("logan@mobi.com");
-    logan.setOrgId(orgId);
-    logan.setTenantId("logan");
-    logan.setOrgName("LOGAN CARNICERIA");
-    logan.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
+    var acme = new UserEntity();
+    acme.setEmail("acme@mobi.com");
+    acme.setOrgId(orgId);
+    acme.setTenantId("acme");
+    acme.setOrgName("ACME CORP");
+    acme.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
 
     // Save to H2 in-memory database
-    var savedUser = userRepository.save(logan);
+    var savedUser = userRepository.save(acme);
     userRepository.flush();
 
     // Validate that the DB assigned a Primary Key (UUID)
     assertThat(savedUser.getId()).isNotNull();
 
     // Find by email as OciAuthenticationProvider would do
-    var foundUserOpt = userRepository.findByEmail("logan@mobi.com");
+    var foundUserOpt = userRepository.findByEmail("acme@mobi.com");
     assertThat(foundUserOpt).isPresent();
 
     // ---------------------------------------------------------
@@ -68,10 +68,10 @@ class TenantFortressTest {
     var claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 
     // Validate that the Tenant Fortress is unbreakable
-    assertThat(claims.getSubject()).isEqualTo("logan@mobi.com");
-    assertThat(claims.get("tenantId", String.class)).isEqualTo("logan");
+    assertThat(claims.getSubject()).isEqualTo("acme@mobi.com");
+    assertThat(claims.get("tenantId", String.class)).isEqualTo("acme");
     assertThat(claims.get("orgId", String.class)).isEqualTo(orgId.toString());
-    assertThat(claims.get("orgName", String.class)).isEqualTo("LOGAN CARNICERIA");
+    assertThat(claims.get("orgName", String.class)).isEqualTo("ACME CORP");
     assertThat(claims.get("roles", String.class)).isEqualTo("MOBI_TENANT_OWNER");
   }
 }
