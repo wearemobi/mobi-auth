@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	implementation 'org.flywaydb:flyway-database-postgresql'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -47,6 +48,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	runtimeOnly 'com.h2database:h2' // Se queda para los tests
+	runtimeOnly 'org.postgresql:postgresql' // <--- ¡ESTA ES LA LLAVE MAESTRA!
 }
 
 tasks.named('test') {
