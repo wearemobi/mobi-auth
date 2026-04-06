@@ -31,9 +31,9 @@ Modify `JwtService` to generate tokens that explicitly map both the technical id
 {
     "sub": "user@mobi.com",
     "roles": ["mobi-tenant-owner"],
-    "tenantId": "logan",
+    "tenantId": "acme",
     "orgId": "550e8400-e29b-41d4-a716-446655440000",
-    "orgName": "LOGAN CARNICERIA",
+    "orgName": "ACME CORP",
     "iat": 1712419200,
     "exp": 1712422800
 }
