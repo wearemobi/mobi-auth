@@ -22,3 +22,17 @@ CREATE TABLE mobi_user_roles (
 -- Índices para búsquedas ultra rápidas de agentes
 CREATE INDEX idx_mobi_users_tenant_id ON mobi_users(tenant_id);
 CREATE INDEX idx_mobi_users_org_id ON mobi_users(org_id);
+
+
+CREATE TABLE mobi_client (
+      id UUID PRIMARY KEY,
+      client_id VARCHAR(100) NOT NULL UNIQUE,
+      client_secret_hash VARCHAR(255) NOT NULL,
+      org_id UUID NOT NULL,
+      tenant_id VARCHAR(100) NOT NULL,
+      app_name VARCHAR(100) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_mobi_client_client_id ON mobi_client(client_id);
+CREATE INDEX idx_mobi_client_tenant_id ON mobi_client(tenant_id);
