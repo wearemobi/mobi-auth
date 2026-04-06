@@ -1,4 +1,4 @@
-# <img src="https://wearemobi.com/icon-light.svg" width="24" height="24" valign="middle"> M.O.B.I.™ · SPEC v1.6: Multi-tenancy & The Tenant Fortress
+# <img src="https://wearemobi.com/icon-light.svg" width="24" height="24" valign="middle"> M.O.B.I.™ · SPEC or DOCS change request v1.0
 
 ## Context & Goal
 The objective of **SPEC 1.6 (The Tenant Fortress)** is to evolve the `mobi-auth` service from a basic authentication module into a robust, Enterprise-grade Multi-tenant Identity Provider. This SPEC prepares the architecture for the upcoming `agentic-java` integration (AI Support via Oracle Database 23ai). It addresses data isolation using immutable UUIDs alongside human-readable slugs, expands the RBAC (Role-Based Access Control) to support Machine-to-Machine (M2M) internal communications, and implements continuity mechanisms (Refresh Tokens) to ensure a seamless UI/UX on the M.O.B.I. Dashboard.
@@ -56,8 +56,8 @@ Adjust `CorsConfigurationSource` to handle multi-tenant origins securely.
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] `UserEntity` successfully persists the new roles and UUIDs to the database.
-- [ ] JWT validates successfully in postman containing `orgId`, `tenantId`, and `orgName`.
+- [z] `UserEntity` successfully persists the new roles and UUIDs to the database.
+- [x] JWT validates successfully in postman containing `orgId`, `tenantId`, and `orgName`.
 - [ ] The `POST /api/v1/auth/refresh` endpoint returns a valid new access token.
 - [ ] M2M authentication for `mobi-system-agent` is successfully mocked and validated.
 - [ ] Docker image builds successfully and runs locally exposing the designated port.
