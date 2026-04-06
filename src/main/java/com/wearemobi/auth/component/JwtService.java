@@ -26,7 +26,7 @@ public class JwtService {
       @Value("${mobi.jwt.expiration-hours:24}") long expirationHours,
       @Value("${mobi.jwt.refresh-expiration-days:7}") long refreshExpirationDays) {
 
-    // Franky: Súper llave de cifrado generada con Hashing seguro
+    // Generación de clave HMAC segura utilizando el secreto proporcionado
     this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     this.expirationHours = expirationHours;
     this.refreshExpirationDays = refreshExpirationDays;

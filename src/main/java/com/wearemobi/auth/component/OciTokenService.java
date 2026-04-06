@@ -31,9 +31,8 @@ public class OciTokenService {
   private String scope;
 
   public String getM2mToken() {
-    // 2. Robin: Verificamos los planos antes de arrancar
-    log.info("🧪 MOBI Franky-Debug: Iniciando ignición M2M hacia OCI.");
-    log.info("📡 Config: URL=[{}], ClientID=[{}], Scope=[{}]", tokenUrl, clientId, scope);
+    // Verificación de configuración antes de la petición a Oracle
+    log.debug("Initiating M2M token request to OCI. URL=[{}], ClientID=[{}], Scope=[{}]", tokenUrl, clientId, scope);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -46,21 +45,18 @@ public class OciTokenService {
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
     try {
-      log.info("🚀 MOBI Franky-Debug: Lanzando petición de energía a Oracle...");
-
       var response = restTemplate.postForEntity(tokenUrl, request, OciTokenResponse.class);
 
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-        log.info("⚡ MOBI Franky-Debug: ¡AUUU! Energía capturada. Token recibido con éxito.");
+        log.info("Successfully retrieved M2M token from OCI Identity Provider.");
         return response.getBody().accessToken();
       }
 
+      log.warn("Received empty or non-OK response from OCI Identity Provider.");
       return null;
     } catch (Exception e) {
-      // 3. Zoro: Si el motor estalla, cortamos el ruido y vemos la herida
-      log.error(
-          "💥 MOBI Franky-Debug: ¡ALERTA! El motor de energía falló. Detalles: {}", e.getMessage());
-      throw new RuntimeException("¡AUUU! Fallo en el motor de energía M2M: " + e.getMessage());
+      log.error("OCI M2M token retrieval failed. Details: {}", e.getMessage());
+      throw new RuntimeException("Failed to retrieve M2M token from OCI Identity Provider: " + e.getMessage());
     }
   }
 }

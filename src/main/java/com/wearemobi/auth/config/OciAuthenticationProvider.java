@@ -78,16 +78,12 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
       var response = restTemplate.postForEntity(tokenEndpointUri, request, OciTokenResponse.class);
 
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-        log.debug("✅ OCI:Authentication successful for user: {}", username);
-
+        log.debug("OCI authentication successful for user: {}", username);
         // --- The M.O.B.I. Broker Intercept ---
         Optional<UserEntity> userOpt = userRepository.findByEmail(username);
 
         if (userOpt.isEmpty()) {
-          // Logic: If OCI approves but the user is missing from the MOBI DB, they are likely a new
-          // registration without a Tenant.
-          // For the MVP, we throw a clear exception rather than returning a basic token.
-          log.warn("⚠️ MOBI: User {} authenticated in OCI but not found in Tenant DB.", username);
+          log.warn("User {} authenticated in OCI but not found in Tenant DB.", username);
           throw new BadCredentialsException("Account not fully provisioned in M.O.B.I. system.");
         }
 
@@ -96,15 +92,14 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
 
         // Generate the MOBI Domain JWT
         String mobiJwt = jwtService.generateToken(mobiUser);
-        log.debug("🔥 MOBI: Super Token generated for tenant: {}", mobiUser.tenantId());
-
+        log.debug("MOBI Super Token generated for tenant: {}", mobiUser.tenantId());
         return getUsernamePasswordAuthenticationToken(mobiUser, username, mobiJwt);
       }
     } catch (HttpClientErrorException e) {
-      log.error("❌ OCI:Auth failed [{}]: {}", e.getStatusCode(), e.getResponseBodyAsString());
+      log.error("OCI Auth failed [{}]: {}", e.getStatusCode(), e.getResponseBodyAsString());
       throw new BadCredentialsException("OCI Identity Provider rejected credentials.");
     } catch (Exception e) {
-      log.error("❌ OCI:Critical system error during authentication: {}", e.getMessage());
+      log.error("OCI Critical system error during authentication {}", e.getMessage());
       throw new BadCredentialsException("Internal Auth Bridge Failure.");
     }
 
