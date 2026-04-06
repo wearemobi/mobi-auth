@@ -59,7 +59,7 @@ Adjust `CorsConfigurationSource` to handle multi-tenant origins securely.
 - [x] `UserEntity` successfully persists the new roles and UUIDs to the database.
 - [x] JWT validates successfully in postman containing `orgId`, `tenantId`, and `orgName`.
 - [x] The `POST /api/v1/auth/refresh` endpoint returns a valid new access token.
-- [ ] M2M authentication for `mobi-system-agent` is successfully mocked and validated.
+- [x] M2M authentication for `mobi-system-agent` is successfully mocked and validated.
 - [x] Docker image builds successfully and runs locally exposing the designated port.
 
 ---
