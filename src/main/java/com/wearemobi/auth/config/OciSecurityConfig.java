@@ -26,10 +26,11 @@ public class OciSecurityConfig {
 
   @Bean
   public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
-    http.authorizeHttpRequests(
+    http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/auth/**"))
+        .authorizeHttpRequests(
             auth ->
-                auth
-                    .requestMatchers("/api/v1/auth/**", "/login", "/register", "/css/**", "/images/**", "/error")
+                auth.requestMatchers(
+                        "/api/v1/auth/**", "/login", "/register", "/css/**", "/images/**", "/error")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
