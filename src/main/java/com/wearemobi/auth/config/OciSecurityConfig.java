@@ -26,7 +26,8 @@ public class OciSecurityConfig {
   public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
     http.authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/login", "/register", "/css/**", "/images/**", "/error")
+                auth
+                    .requestMatchers("/api/v1/auth/**", "/login", "/register", "/css/**", "/images/**", "/error")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
