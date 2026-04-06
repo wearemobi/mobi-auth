@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "mobi_users")
+@Table(name = "mobi_user")
 public class UserEntity {
 
   @Id
@@ -31,7 +31,7 @@ public class UserEntity {
 
   // --- Roles ---
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "mobi_user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @CollectionTable(name = "mobi_user_role", joinColumns = @JoinColumn(name = "user_id"))
   @Enumerated(EnumType.STRING)
   @Column(name = "role")
   private Set<Role> roles;

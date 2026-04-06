@@ -22,9 +22,9 @@ public class JwtService {
   private final long refreshExpirationDays;
 
   public JwtService(
-          @Value("${mobi.jwt.secret:SuperSecretMobiKey2026NeedToBeLongEnough32Bytes}") String secret,
-          @Value("${mobi.jwt.expiration-hours:24}") long expirationHours,
-          @Value("${mobi.jwt.refresh-expiration-days:7}") long refreshExpirationDays) {
+      @Value("${mobi.jwt.secret:SuperSecretMobiKey2026NeedToBeLongEnough32Bytes}") String secret,
+      @Value("${mobi.jwt.expiration-hours:24}") long expirationHours,
+      @Value("${mobi.jwt.refresh-expiration-days:7}") long refreshExpirationDays) {
 
     // Franky: Súper llave de cifrado generada con Hashing seguro
     this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -37,21 +37,22 @@ public class JwtService {
     var now = Instant.now();
     var expiration = now.plus(expirationHours, ChronoUnit.HOURS);
 
-    var claims = Map.of(
+    var claims =
+        Map.of(
             "roles", user.role(),
             "tenantId", user.tenantId(),
             "orgId", user.orgId(),
             "orgName", user.orgName(),
             "type", "ACCESS" // Robin: Etiqueta de seguridad
-    );
+            );
 
     return Jwts.builder()
-            .subject(user.email())
-            .claims(claims)
-            .issuedAt(Date.from(now))
-            .expiration(Date.from(expiration))
-            .signWith(secretKey)
-            .compact();
+        .subject(user.email())
+        .claims(claims)
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(expiration))
+        .signWith(secretKey)
+        .compact();
   }
 
   /** Genera el Refresh Token (La llave maestra de larga duración) */
@@ -60,20 +61,16 @@ public class JwtService {
     var expiration = now.plus(refreshExpirationDays, ChronoUnit.DAYS);
 
     return Jwts.builder()
-            .subject(user.email())
-            .claim("type", "REFRESH") // Solo necesitamos saber quién es y qué tipo de token es
-            .issuedAt(Date.from(now))
-            .expiration(Date.from(expiration))
-            .signWith(secretKey)
-            .compact();
+        .subject(user.email())
+        .claim("type", "REFRESH") // Solo necesitamos saber quién es y qué tipo de token es
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(expiration))
+        .signWith(secretKey)
+        .compact();
   }
 
   /** Extrae el ADN del Token para validación */
   public Claims extractClaims(String token) {
-    return Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
   }
 }
