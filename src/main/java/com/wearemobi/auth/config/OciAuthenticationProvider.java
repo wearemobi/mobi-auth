@@ -3,16 +3,19 @@ package com.wearemobi.auth.config;
 
 import com.wearemobi.auth.component.JwtService;
 import com.wearemobi.auth.domain.MobiUser;
+import com.wearemobi.auth.domain.Role;
 import com.wearemobi.auth.entity.UserEntity;
+import com.wearemobi.auth.event.UserRegisteredEvent;
 import com.wearemobi.auth.mapper.UserMapper;
 import com.wearemobi.auth.repository.UserRepository;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,10 +52,12 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
 
   private final UserRepository userRepository;
   private final JwtService jwtService;
+  private final ApplicationEventPublisher eventPublisher;
 
-  public OciAuthenticationProvider(UserRepository userRepository, JwtService jwtService) {
+  public OciAuthenticationProvider(UserRepository userRepository, JwtService jwtService, ApplicationEventPublisher eventPublisher) {
     this.userRepository = userRepository;
     this.jwtService = jwtService;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -79,15 +84,13 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
 
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
         log.debug("OCI authentication successful for user: {}", username);
-        // --- The M.O.B.I. Broker Intercept ---
-        Optional<UserEntity> userOpt = userRepository.findByEmail(username);
 
-        if (userOpt.isEmpty()) {
-          log.warn("User {} authenticated in OCI but not found in Tenant DB.", username);
-          throw new BadCredentialsException("Account not fully provisioned in M.O.B.I. system.");
-        }
+        // --- The M.O.B.I. Broker Intercept (JIT Provisioning) ---
+        // If not found, we forge the user and fire the hook in one go.
+        UserEntity userEntity = userRepository.findByEmail(username)
+                .orElseGet(() -> executeJitProvisioningAndHook(username));
 
-        UserEntity userEntity = userOpt.get();
+        // We map the newly found/created entity to our Domain model
         var mobiUser = UserMapper.toDomain(userEntity);
 
         // Generate the MOBI Domain JWT
@@ -122,6 +125,28 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
     // (A custom Record could be implemented here if both tokens need to be accessed later)
     authResult.setDetails(mobiJwt);
     return authResult;
+  }
+
+  private UserEntity executeJitProvisioningAndHook(String email) {
+    // 🛠️ DEBUG: Starting JIT provisioning for OCI user
+    log.info("Executing JIT Provisioning for new user: {}", email);
+
+    UserEntity newUser = new UserEntity();
+    newUser.setEmail(email);
+    newUser.setOrgId(UUID.randomUUID());
+
+    // Basic tenantId generation from email local part
+    String tenantId = email.split("@")[0].replaceAll("[^a-zA-Z0-9]", "-").toLowerCase();
+    newUser.setTenantId(tenantId);
+    newUser.setOrgName("Workspace " + tenantId);
+    newUser.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
+
+    UserEntity savedUser = userRepository.save(newUser);
+
+    // Publish domain event for downstream hooks (Cloudflare, etc.)
+    eventPublisher.publishEvent(new UserRegisteredEvent(savedUser));
+
+    return savedUser;
   }
 
   @Override
