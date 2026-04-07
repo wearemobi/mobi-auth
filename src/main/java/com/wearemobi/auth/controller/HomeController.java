@@ -23,16 +23,12 @@ public class HomeController {
     var tokenData =
         Optional.ofNullable(auth.getDetails())
             .filter(OciTokenResponse.class::isInstance)
-            .map(OciTokenResponse.class::cast)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Missing OCI token details"));
+            .map(OciTokenResponse.class::cast);
 
     model.addAttribute("username", auth.getName());
     model.addAttribute("status", "AUTH_VIA_MOBI_ON_OCI");
-    model.addAttribute("tokenType", tokenData.tokenType());
-    model.addAttribute("expiresIn", tokenData.expiresIn());
+    model.addAttribute("tokenType", tokenData.map(OciTokenResponse::tokenType).orElse("Bearer"));
+    model.addAttribute("expiresIn", tokenData.map(OciTokenResponse::expiresIn).orElse(3600));
 
     return "home";
   }
