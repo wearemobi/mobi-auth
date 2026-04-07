@@ -2,6 +2,7 @@
 package com.wearemobi.auth.controller;
 
 import com.wearemobi.auth.component.JwtService;
+import com.wearemobi.auth.component.TokenSensor;
 import com.wearemobi.auth.domain.MobiUser;
 import com.wearemobi.auth.domain.Role;
 import com.wearemobi.auth.mapper.UserMapper;
@@ -24,16 +25,19 @@ public class AuthController {
   private final UserRepository userRepository;
   private final ClientRepository clientRepository;
   private final PasswordEncoder passwordEncoder;
+  private final TokenSensor tokenSensor;
 
   public AuthController(
       JwtService jwtService,
       UserRepository userRepository,
       ClientRepository clientRepository,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      TokenSensor tokenSensor) {
     this.jwtService = jwtService;
     this.userRepository = userRepository;
     this.clientRepository = clientRepository;
     this.passwordEncoder = passwordEncoder;
+    this.tokenSensor = tokenSensor;
   }
 
   @PostMapping("/refresh")
@@ -84,12 +88,18 @@ public class AuthController {
     String clientId = request.get("clientId");
     String clientSecret = request.get("clientSecret");
 
-    log.debug("Processing M2M token request for clientId: [{}]", clientId);
+    // 🛠️ DEBUG: Franky's Periscope Entry
+    tokenSensor.debug("Processing M2M token request for clientId: [{}]", clientId);
 
     return clientRepository
         .findByClientId(clientId)
         .map(
             client -> {
+              // 🛠️ DEBUG: Franky's Deep Scan
+              // This will log raw secret, stored hash, and generate a NEW valid hash for you.
+              tokenSensor.inspectAuth(
+                  clientSecret, client.getClientSecretHash(), "M2M Login Attempt");
+
               boolean matches = passwordEncoder.matches(clientSecret, client.getClientSecretHash());
 
               if (!matches) {
@@ -109,14 +119,18 @@ public class AuthController {
                       client.getAppName());
 
               String token = jwtService.generateToken(systemUser);
-              log.info("M2M token successfully generated for clientId: [{}]", clientId);
+
+              // 🛠️ DEBUG: Signal of success
+              tokenSensor.debug("M2M token successfully generated for clientId: [{}]", clientId);
 
               return ResponseEntity.ok(
                   Map.of("accessToken", token, "tokenType", "Bearer", "expiresIn", 86400));
             })
         .orElseGet(
             () -> {
-              log.warn("Authentication failed: ClientId [{}] not found in database.", clientId);
+              // 🛠️ DEBUG: Missing target detection
+              tokenSensor.debug(
+                  "Authentication failed: ClientId [{}] not found in database.", clientId);
               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             });
   }
