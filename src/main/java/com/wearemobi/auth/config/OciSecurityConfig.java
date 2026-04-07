@@ -1,6 +1,7 @@
 // Copyright © 2026 M.O.B.I.™ (Machine Oriented Brilliant Ideas™)
 package com.wearemobi.auth.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,35 +25,36 @@ public class OciSecurityConfig {
     this.ociAuthenticationProvider = ociAuthenticationProvider;
   }
 
+  @Value("${mobi.auth.security.public-routes:/login,/error}")
+  private String[] publicRoutes;
+
   @Bean
   public SecurityFilterChain ociSecurityFilterChain(
       HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) {
-    http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/auth/**"))
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(
-                        "/api/v1/auth/**",
-                        "/api/v1/auth/me",
-                        "/login",
-                        "/register",
-                        "/css/**",
-                        "/images/**",
-                        "/error")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
-        .addFilterBefore(
-            jwtAuthFilter,
-            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-                .class)
-        .formLogin(
+
+    // CORS
+    http.cors(org.springframework.security.config.Customizer.withDefaults());
+
+    // CSRF
+    http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/auth/**"));
+
+    // AUTHORIZATION
+    http.authorizeHttpRequests(
+        auth -> auth.requestMatchers(publicRoutes).permitAll().anyRequest().authenticated());
+
+    // FILTERS
+    http.addFilterBefore(
+        jwtAuthFilter,
+        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
+    // LOGIN FORM
+    http.formLogin(
             form ->
                 // Jolly Roger B&W
                 form.loginPage("/login").defaultSuccessUrl("/home", true).permitAll())
-        .logout(LogoutConfigurer::permitAll)
-        .authenticationProvider(ociAuthenticationProvider);
+        .logout(LogoutConfigurer::permitAll);
 
-    return http.build();
+    return http.authenticationProvider(ociAuthenticationProvider).build();
   }
 
   @Bean
