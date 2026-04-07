@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,26 @@ public class AuthController {
     this.tokenSensor = tokenSensor;
   }
 
+  /**
+   * 👤 ENDPOINT: Login para Usuarios (Web/Mobile) Diseñado para funcionar con el curl de parámetros
+   * escapeados.
+   */
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
+    // 🛠️ DEBUG: Franky's Login Bridge Sensor
+    tokenSensor.debug("REST Login attempt for user: [{}]", username);
+
+    return userRepository
+        .findByEmail(username)
+        .map(UserMapper::toDomain)
+        .map(this::generateAuthResponse) // 🚀 Uso del Motor Central
+        .orElseGet(
+            () -> {
+              log.warn("Login failed: User [{}] not found in M.O.B.I. database.", username);
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            });
+  }
+
   @PostMapping("/refresh")
   public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
     String refreshToken = request.get("refreshToken");
@@ -64,12 +85,7 @@ public class AuthController {
       return userRepository
           .findByEmail(email)
           .map(UserMapper::toDomain)
-          .map(
-              user -> {
-                String newAccessToken = jwtService.generateToken(user);
-                log.debug("Access token successfully refreshed for tenant: {}", user.tenantId());
-                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-              })
+          .map(this::generateAuthResponse) // 🚀 Uso del Motor Central para consistencia
           .orElseGet(
               () -> {
                 log.error("User [{}] not found during refresh token validation.", email);
@@ -96,7 +112,6 @@ public class AuthController {
         .map(
             client -> {
               // 🛠️ DEBUG: Franky's Deep Scan
-              // This will log raw secret, stored hash, and generate a NEW valid hash for you.
               tokenSensor.inspectAuth(
                   clientSecret, client.getClientSecretHash(), "M2M Login Attempt");
 
@@ -118,13 +133,10 @@ public class AuthController {
                       client.getOrgId().toString(),
                       client.getAppName());
 
-              String token = jwtService.generateToken(systemUser);
-
               // 🛠️ DEBUG: Signal of success
               tokenSensor.debug("M2M token successfully generated for clientId: [{}]", clientId);
 
-              return ResponseEntity.ok(
-                  Map.of("accessToken", token, "tokenType", "Bearer", "expiresIn", 86400));
+              return generateAuthResponse(systemUser); // 🚀 Uso del Motor Central
             })
         .orElseGet(
             () -> {
@@ -133,5 +145,50 @@ public class AuthController {
                   "Authentication failed: ClientId [{}] not found in database.", clientId);
               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             });
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+    // 🛡️ FRANKY'S GADGET: Verificación de seguridad antes del abordaje
+    if (authentication == null || !authentication.isAuthenticated()) {
+      tokenSensor.debug("Identity request failed: No authentication context found.");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    tokenSensor.debug("Identity resolution request for: [{}]", authentication.getName());
+
+    return userRepository
+        .findByEmail(authentication.getName())
+        .map(UserMapper::toDomain)
+        .map(
+            mobiUser -> {
+              log.info("Identity successfully resolved for tenant: [{}]", mobiUser.tenantId());
+              return ResponseEntity.ok(mobiUser);
+            })
+        .orElseGet(
+            () -> {
+              log.warn("Identity failed: User [{}] not found in DB", authentication.getName());
+              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            });
+  }
+
+  /**
+   * ⚙️ MOTOR CENTRAL: Identity Response Engine Centraliza la forja del JWT y el formato del JSON de
+   * salida.
+   */
+  private ResponseEntity<?> generateAuthResponse(MobiUser user) {
+    String token = jwtService.generateToken(user);
+    log.info("Token successfully issued for: [{}] | Tenant: [{}]", user.email(), user.tenantId());
+
+    return ResponseEntity.ok(
+        Map.of(
+            "accessToken",
+            token,
+            "tokenType",
+            "Bearer",
+            "expiresIn",
+            86400, // 24 horas unificado para la v1.7
+            "issuedAt",
+            System.currentTimeMillis() / 1000));
   }
 }
