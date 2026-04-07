@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostRegistrationHook {
 
-    private static final Logger log = LoggerFactory.getLogger(PostRegistrationHook.class);
+  private static final Logger log = LoggerFactory.getLogger(PostRegistrationHook.class);
 
-    @EventListener
-    public void handleUserRegistration(UserRegisteredEvent event) {
-        // 🛠️ DEBUG: Franky's sensor triggered for user registration
-        log.info("Post-registration hook triggered for user: {}", event.user().getEmail());
-        log.info("Tenant provisioning pending for: {}", event.user().getTenantId());
-    }
+  @EventListener
+  public void handleUserRegistration(UserRegisteredEvent event) {
+    // 🛠️ DEBUG: Franky's sensor triggered for user registration
+    log.info("Post-registration hook triggered for user: {}", event.user().getEmail());
+    log.info("Tenant provisioning pending for: {}", event.user().getTenantId());
+  }
 }

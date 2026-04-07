@@ -8,9 +8,7 @@ import com.wearemobi.auth.entity.UserEntity;
 import com.wearemobi.auth.event.UserRegisteredEvent;
 import com.wearemobi.auth.mapper.UserMapper;
 import com.wearemobi.auth.repository.UserRepository;
-
 import java.util.*;
-
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +52,10 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
   private final JwtService jwtService;
   private final ApplicationEventPublisher eventPublisher;
 
-  public OciAuthenticationProvider(UserRepository userRepository, JwtService jwtService, ApplicationEventPublisher eventPublisher) {
+  public OciAuthenticationProvider(
+      UserRepository userRepository,
+      JwtService jwtService,
+      ApplicationEventPublisher eventPublisher) {
     this.userRepository = userRepository;
     this.jwtService = jwtService;
     this.eventPublisher = eventPublisher;
@@ -87,7 +88,9 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
 
         // --- The M.O.B.I. Broker Intercept (JIT Provisioning) ---
         // If not found, we forge the user and fire the hook in one go.
-        UserEntity userEntity = userRepository.findByEmail(username)
+        UserEntity userEntity =
+            userRepository
+                .findByEmail(username)
                 .orElseGet(() -> executeJitProvisioningAndHook(username));
 
         // We map the newly found/created entity to our Domain model
