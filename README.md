@@ -2,15 +2,16 @@
 
 **Mobi Auth** is a cloud-native Identity Provider (IdP) and OAuth2 Authorization Server. Built with Java 21, Spring Boot 3.4, and Spring Security.
 
->🛡 Mobi Auth is one of the core components of the M.O.B.I. ecosystem, designed specifically with the AI platform in mind. Evolved from a basic authentication module into a robust Multi-tenant Identity Provider, it provides secure, centralized access for both human operators and autonomous AI Agents (M2M) operating within OCI.
+>🛡 Mobi Auth is one of the core components of the M.O.B.I. ecosystem, designed specifically with the AI platform in mind. Evolved from a multi-tenant Identity Provider into a robust **Identity Gateway**, it provides unified access for human operators, autonomous AI Agents (M2M), and seamless Dashboard integration.
 
 ## 🚀 Key Features
 
 * **Multi-tenant Fortress:** Strict data isolation using immutable UUIDs and human-readable slugs for tenant organization and real users.
-* **M2M Ready:** Secure Client Credentials flow allowing internal clients (such as AI agents) to authenticate autonomously via machine-specific roles.
-* **Session Continuity:** Robust Refresh Token implementation to ensure seamless UI/UX for long-running operations on the central dashboard.
-* **Modern Security:** Implements BCrypt password hashing, JWT-based contextual claims, and dynamic CORS configuration.
-* **Cloud-Native Blueprint:** Fully Dockerized with a lightweight multi-stage Alpine build, ready for OCI (Oracle Cloud Infrastructure) enterprise deployment.
+* **Identity Gateway & API:** New `/api/v1/auth/me` endpoint to resolve user "DNA" (roles, tenant, org) for personalized frontend experiences.
+* **JIT (Just-In-Time) Provisioning:** Automatic user forking and organization creation upon successful OCI authentication.
+* **M2M Ready:** Secure Client Credentials flow allowing internal clients (AI agents) to authenticate autonomously via machine-specific roles.
+* **Session Continuity:** Robust Refresh Token implementation to ensure seamless UI/UX for long-running operations.
+* **Enterprise Security:** BCrypt hashing, JWT-based contextual claims, and dynamic CORS/Security configuration via `application.properties`.
 
 ## 🛠️ Tech Stack
 
@@ -18,12 +19,12 @@
 * **Framework:** Spring Boot 3.4 / Spring Security
 * **Database:** PostgreSQL 15 (Primary) / H2 (In-memory testing)
 * **Migrations:** Flyway
-* **Security Standards:** JWT, OIDC, OAuth 2.1, RBAC
+* **Security Standards:** JWT, OIDC, OAuth 2.1, RBAC, CORS
 
 ## 📖 Documentation & Testing
 
-* **Architecture Specs:** See `docs/SPEC-v1.6.md` for details on the Multi-tenant implementation.
-* **QA Runbooks:** For End-to-End validation procedures, refer to `docs/QA-v1.6-RUNBOOK.md`.
+* **Architecture Specs:** See `docs/SPEC-v1.7.md` for details on the Identity & Gateway Protocol.
+* **QA Runbooks:** For End-to-End validation procedures, refer to `docs/QA-v1.7-RUNBOOK.md`.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
