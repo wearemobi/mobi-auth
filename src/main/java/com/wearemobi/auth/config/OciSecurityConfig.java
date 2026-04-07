@@ -25,15 +25,26 @@ public class OciSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain ociSecurityFilterChain(HttpSecurity http) {
+  public SecurityFilterChain ociSecurityFilterChain(
+      HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) {
     http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/auth/**"))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
-                        "/api/v1/auth/**", "/login", "/register", "/css/**", "/images/**", "/error")
+                        "/api/v1/auth/**",
+                        "/api/v1/auth/me",
+                        "/login",
+                        "/register",
+                        "/css/**",
+                        "/images/**",
+                        "/error")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
+        .addFilterBefore(
+            jwtAuthFilter,
+            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+                .class)
         .formLogin(
             form ->
                 // Jolly Roger B&W

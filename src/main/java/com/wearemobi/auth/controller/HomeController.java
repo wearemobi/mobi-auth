@@ -36,12 +36,21 @@ public class HomeController {
   @GetMapping("/profile")
   public String profile(Model model) {
     var auth = SecurityContextHolder.getContext().getAuthentication();
-    var tokenData = (OciTokenResponse) auth.getDetails();
+
+    String accessToken = "TOKEN_NOT_FOUND";
+    Integer expires = 3600;
+
+    if (auth.getDetails() instanceof OciTokenResponse oci) {
+      accessToken = oci.accessToken();
+      expires = oci.expiresIn();
+    } else if (auth.getDetails() instanceof String tokenStr) {
+      accessToken = tokenStr;
+    }
 
     model.addAttribute("username", auth.getName());
-    model.addAttribute("accessToken", tokenData.accessToken());
-    model.addAttribute("idToken", tokenData.idToken());
-    model.addAttribute("expiresIn", tokenData.expiresIn());
+    model.addAttribute("accessToken", accessToken);
+    model.addAttribute("expiresIn", expires);
+    model.addAttribute("idToken", "N/A");
 
     return "profile";
   }
