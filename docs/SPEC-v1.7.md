@@ -36,12 +36,12 @@ A secure resource that returns the "DNA" of the authenticated user:
 
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
-- [ ] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] CORS Pre-flight (`OPTIONS`) requests return `200 OK` from a different local origin.
-- [ ] JIT Logic: New OCI users are automatically persisted in the `mobi_user` table upon first login.
-- [ ] Event Hook: System logs confirm the `UserRegisteredEvent` is fired and caught.
-- [ ] `/api/v1/auth/me` returns the correct JSON payload.
-- [ ] `profile.html` successfully displays dynamic tenant data.
+- [x] The document is merged into the `main` branch under the `docs/` folder.
+- [x] CORS Pre-flight (`OPTIONS`) requests return `200 OK` from a different local origin.
+- [x] JIT Logic: New OCI users are automatically persisted in the `mobi_user` table upon first login.
+- [x] Event Hook: System logs confirm the `UserRegisteredEvent` is fired and caught.
+- [x] `/api/v1/auth/me` returns the correct JSON payload.
+- [x] `profile.html` successfully displays dynamic tenant data.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
