@@ -30,9 +30,7 @@ import tools.jackson.databind.ObjectMapper;
     })
 @AutoConfigureMockMvc
 public abstract class BaseSystemTest {
-    @Autowired
-    protected MockMvc mockMvc;
+  @Autowired protected MockMvc mockMvc;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+  @Autowired protected ObjectMapper objectMapper;
 }
