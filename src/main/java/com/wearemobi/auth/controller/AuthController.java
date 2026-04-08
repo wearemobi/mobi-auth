@@ -14,7 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,18 +31,21 @@ public class AuthController {
   private final ClientRepository clientRepository;
   private final PasswordEncoder passwordEncoder;
   private final TokenSensor tokenSensor;
+  private final AuthenticationManager authManager;
 
   public AuthController(
       JwtService jwtService,
       UserRepository userRepository,
       ClientRepository clientRepository,
       PasswordEncoder passwordEncoder,
-      TokenSensor tokenSensor) {
+      TokenSensor tokenSensor,
+      AuthenticationManager authManager) {
     this.jwtService = jwtService;
     this.userRepository = userRepository;
     this.clientRepository = clientRepository;
     this.passwordEncoder = passwordEncoder;
     this.tokenSensor = tokenSensor;
+    this.authManager = authManager;
   }
 
   /**
@@ -48,18 +54,29 @@ public class AuthController {
    */
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
-    // 🛠️ DEBUG: Franky's Login Bridge Sensor
-    tokenSensor.debug("REST Login attempt for user: [{}]", username);
+    tokenSensor.debug("Initiating OCI Cloud Auth for user: [{}]", username);
 
-    return userRepository
-        .findByEmail(username)
-        .map(UserMapper::toDomain)
-        .map(this::generateAuthResponse) // 🚀 Triggering Core Engine
-        .orElseGet(
-            () -> {
-              log.warn("Login failed: User [{}] not found in M.O.B.I. database.", username);
-              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            });
+    try {
+      // 1. Delegamos la validación a Oracle Cloud a través del AuthenticationManager
+      Authentication auth =
+          authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+      // 2. Si llegamos aquí, ¡OCI confirmó que la contraseña es correcta!
+      // Ahora buscamos nuestra metadata local (Tenant, Org, etc.)
+      return userRepository
+          .findByEmail(username)
+          .map(UserMapper::toDomain)
+          .map(this::generateAuthResponse)
+          .orElseGet(
+              () -> {
+                log.error("Cloud Auth success, but user [{}] missing in local DB!", username);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+              });
+
+    } catch (AuthenticationException e) {
+      log.warn("Login failed: Invalid credentials for user [{}] in OCI Domain.", username);
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 
   /** 🔄 ENDPOINT: Token Refresh. Validates the Refresh Token and issues a new Access Token pair. */
