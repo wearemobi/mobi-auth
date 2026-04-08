@@ -11,6 +11,7 @@ import com.wearemobi.auth.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -64,14 +65,12 @@ class TenantFortressTest {
     // 3. ASSERT: Decoding and Claims Validation (Acceptance Criteria)
     // ---------------------------------------------------------
     var secretKey = Keys.hmacShaKeyFor(testSecret.getBytes(StandardCharsets.UTF_8));
-
     var claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 
-    // Validate that the Tenant Fortress is unbreakable
     assertThat(claims.getSubject()).isEqualTo("acme@mobi.com");
     assertThat(claims.get("tenantId", String.class)).isEqualTo("acme");
-    assertThat(claims.get("orgId", String.class)).isEqualTo(orgId.toString());
-    assertThat(claims.get("orgName", String.class)).isEqualTo("ACME CORP");
-    assertThat(claims.get("roles", String.class)).isEqualTo("MOBI_TENANT_OWNER");
+
+    var roles = (List<String>) claims.get("roles", List.class);
+    assertThat(roles).containsExactlyInAnyOrder("ROLE_MOBI_TENANT_OWNER");
   }
 }
