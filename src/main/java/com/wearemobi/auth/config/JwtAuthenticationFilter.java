@@ -27,8 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-          HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-          throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     final String authHeader = request.getHeader("Authorization");
 
@@ -53,16 +53,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         List<String> roles = (List<String>) jwtService.extractClaims(jwt).get("roles");
 
         // Map roles to Spring GrantedAuthorities
-        var authorities = roles == null ?
-                Collections.<SimpleGrantedAuthority>emptyList() :
-                roles.stream().map(SimpleGrantedAuthority::new).toList();
+        var authorities =
+            roles == null
+                ? Collections.<SimpleGrantedAuthority>emptyList()
+                : roles.stream().map(SimpleGrantedAuthority::new).toList();
 
         // [FRANKY-DEBUG]: Authorities found: {} -> AUUUU!
         logger.debug("Authorities mapped: " + authorities);
 
         // Create authentication token with discovered authorities
-        var authToken =
-                new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
+        var authToken = new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
