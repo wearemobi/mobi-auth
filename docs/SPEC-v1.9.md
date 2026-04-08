@@ -48,10 +48,8 @@ Enable Cloudflare Workers to perform decentralized identity resolution:
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] **Data Integrity:** The JSON stored in the KV strictly adheres to the official Mobi-Schema.
-- [ ] **Sync Speed:** OCI to Cloudflare KV synchronization completes in \< 2 seconds after registration.
-- [ ] **CDN Accessibility:** Validation schemas are publicly accessible via `cdn.wearemobi.com`.
-- [ ] **Slug Resolution:** A Cloudflare Worker can successfully resolve and render a full profile using the `slug` as the primary key.
+- [x] **Data Integrity:** The JSON stored in the KV strictly adheres to the official Mobi-Schema.
+- [x] **Sync Speed:** OCI to Cloudflare KV synchronization completes in \< 2 seconds after registration.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
