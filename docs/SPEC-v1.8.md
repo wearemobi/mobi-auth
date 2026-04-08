@@ -39,9 +39,9 @@ Update `AuthController` and the future `DashboardController` (Command Center) to
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] **Security Validation:** An AI Agent token is blocked when trying to access `/api/v1/auth/me`.
-- [ ] **Owner Validation:** A `TENANT_OWNER` can successfully resolve identity and access dashboard resources.
-- [ ] **Identity Integrity:** Decoded JWTs show correct role strings under the `roles` claim.
+- [x] **Security Validation:** An AI Agent token is blocked when trying to access `/api/v1/auth/me`.
+- [x] **Owner Validation:** A `TENANT_OWNER` can successfully resolve identity and access dashboard resources.
+- [x] **Identity Integrity:** Decoded JWTs show correct role strings under the `roles` claim.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
