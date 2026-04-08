@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,8 @@ public class AuthController {
   }
 
   /**
-   * 👤 ENDPOINT: Login para Usuarios (Web/Mobile) Diseñado para funcionar con el curl de parámetros
-   * escapeados.
+   * 👤 ENDPOINT: Human User Login (Web/Mobile). Designed to handle URL-encoded parameters for broad
+   * client compatibility.
    */
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
@@ -53,7 +54,7 @@ public class AuthController {
     return userRepository
         .findByEmail(username)
         .map(UserMapper::toDomain)
-        .map(this::generateAuthResponse) // 🚀 Uso del Motor Central
+        .map(this::generateAuthResponse) // 🚀 Triggering Core Engine
         .orElseGet(
             () -> {
               log.warn("Login failed: User [{}] not found in M.O.B.I. database.", username);
@@ -61,6 +62,7 @@ public class AuthController {
             });
   }
 
+  /** 🔄 ENDPOINT: Token Refresh. Validates the Refresh Token and issues a new Access Token pair. */
   @PostMapping("/refresh")
   public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
     String refreshToken = request.get("refreshToken");
@@ -74,7 +76,7 @@ public class AuthController {
 
       if (!"REFRESH".equals(claims.get("type"))) {
         log.warn(
-            "Invalid token type. Attempted use of ACCESS token as REFRESH token by subject: {}",
+            "Invalid token type attempt. ACCESS token used as REFRESH by subject: {}",
             claims.getSubject());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(Map.of("error", "Invalid token type"));
@@ -85,7 +87,7 @@ public class AuthController {
       return userRepository
           .findByEmail(email)
           .map(UserMapper::toDomain)
-          .map(this::generateAuthResponse) // 🚀 Uso del Motor Central para consistencia
+          .map(this::generateAuthResponse) // 🚀 Ensuring consistency via Core Engine
           .orElseGet(
               () -> {
                 log.error("User [{}] not found during refresh token validation.", email);
@@ -99,6 +101,10 @@ public class AuthController {
     }
   }
 
+  /**
+   * 🤖 ENDPOINT: M2M Token Generation. Authenticates internal/external services (AI Agents) using
+   * Client Credentials.
+   */
   @PostMapping("/token")
   public ResponseEntity<?> getM2MToken(@RequestBody Map<String, String> request) {
     String clientId = request.get("clientId");
@@ -122,7 +128,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
               }
 
-              // Creación de usuario de sistema sintético para el token M2M
+              // Synthetic System User creation for M2M tokens
               var systemUser =
                   new MobiUser(
                       client.getId(),
@@ -136,7 +142,7 @@ public class AuthController {
               // 🛠️ DEBUG: Signal of success
               tokenSensor.debug("M2M token successfully generated for clientId: [{}]", clientId);
 
-              return generateAuthResponse(systemUser); // 🚀 Uso del Motor Central
+              return generateAuthResponse(systemUser); // 🚀 Core Engine deployment
             })
         .orElseGet(
             () -> {
@@ -147,9 +153,16 @@ public class AuthController {
             });
   }
 
+  /**
+   * 🛡️ ENDPOINT: Identity Resolution. Restricted to Human Operators. Agents are forbidden from
+   * resolving full identity here.
+   */
   @GetMapping("/me")
+  @PreAuthorize(
+      "hasAnyRole('MOBI_TENANT_OWNER', 'MOBI_CORE_ADMIN')") // [FRANKY-DEBUG]: Shielding identity
+  // from AI Polizones! AUUU!
   public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-    // 🛡️ FRANKY'S GADGET: Verificación de seguridad antes del abordaje
+
     if (authentication == null || !authentication.isAuthenticated()) {
       tokenSensor.debug("Identity request failed: No authentication context found.");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -173,8 +186,8 @@ public class AuthController {
   }
 
   /**
-   * ⚙️ MOTOR CENTRAL: Identity Response Engine Centraliza la forja del JWT y el formato del JSON de
-   * salida.
+   * ⚙️ CORE ENGINE: Identity Response Engine. Centralizes JWT generation and output JSON formatting
+   * for all authentication flows.
    */
   private ResponseEntity<?> generateAuthResponse(MobiUser user) {
     String token = jwtService.generateToken(user);
@@ -187,7 +200,7 @@ public class AuthController {
             "tokenType",
             "Bearer",
             "expiresIn",
-            86400, // 24 horas unificado para la v1.7
+            86400, // Unified 24h expiration for v1.8
             "issuedAt",
             System.currentTimeMillis() / 1000));
   }
