@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 class AuthRefreshSystemTest extends BaseSystemTest {
@@ -29,10 +31,12 @@ class AuthRefreshSystemTest extends BaseSystemTest {
   @Autowired private JwtService jwtService;
   @Autowired private ObjectMapper objectMapper;
 
+  @MockitoBean private AuthenticationManager authManager;
+
   @Test
-  @DisplayName("Check 3: Should exchange Refresh Token for a fresh Access Token")
+  @DisplayName("Should exchange Refresh Token for a fresh Access Token")
   void shouldReturnNewAccessTokenWhenRefreshTokenIsValid() throws Exception {
-    // 1. ARRANGE: Creamos un usuario real en H2
+    // ARRANGE: Setup user
     var email = "acme@mobi.com";
     var user = new UserEntity();
     user.setEmail(email);
@@ -41,12 +45,12 @@ class AuthRefreshSystemTest extends BaseSystemTest {
     user.setOrgName("ACME CORP");
     user.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
     userRepository.save(user);
+    userRepository.flush();
 
-    // Generamos el Refresh Token usando el servicio
+    // Generate refresh Token
     var mobiUser = com.wearemobi.auth.mapper.UserMapper.toDomain(user);
     String refreshToken = jwtService.generateRefreshToken(mobiUser);
 
-    // 2. ACT: Golpeamos el endpoint /api/v1/auth/refresh
     var requestBody = Map.of("refreshToken", refreshToken);
 
     mockMvc
