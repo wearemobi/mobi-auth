@@ -143,10 +143,13 @@ public class OciAuthenticationProvider implements AuthenticationProvider {
     newUser.setTenantId(tenantId);
     newUser.setOrgName("Workspace " + tenantId);
     newUser.setRoles(Set.of(Role.MOBI_TENANT_OWNER));
+    // newUser.setSlug(tenantId); // Usando el tenant como slug inicial
+    // newUser.setName(email.split("@")[0]); // Un nombre temporal basado en el email
 
     UserEntity savedUser = userRepository.save(newUser);
 
     // Publish domain event for downstream hooks (Cloudflare, etc.)
+    log.info(">> [EVENT-DISPATCH] Lanzando bengala de registro para: {}", savedUser.getEmail());
     eventPublisher.publishEvent(new UserRegisteredEvent(savedUser));
 
     return savedUser;

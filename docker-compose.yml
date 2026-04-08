@@ -21,10 +21,14 @@ services:
       - MOBI_OCI_ISSUER_URI=${MOBI_OCI_ISSUER_URI}
       - MOBI_OCI_SCIM_URL=${MOBI_OCI_SCIM_URL}
       - MOBI_OCI_TOKEN_URI=${MOBI_OCI_TOKEN_URI}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_KV_NAMESPACE_ID=${CLOUDFLARE_KV_NAMESPACE_ID}
     depends_on:
       mobi-db:
         condition: service_healthy
-
+    env_file:
+      - .env
   mobi-db:
     image: postgres:15-alpine
     container_name: mobi-db
