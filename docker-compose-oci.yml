@@ -5,16 +5,18 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - mobi-net
+      mobi-net:
+        aliases:
+          - auth-service
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-oci}
       - SERVER_PORT=9090
       - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@mobi-db:1521/FREEPDB1
-      - SPRING_DATASOURCE_USERNAME=${MOBI_AUTH_DB_USER:-mobi_user}
-      - SPRING_DATASOURCE_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+      - SPRING_DATASOURCE_USERNAME=${MOBI_AUTH_DB_USER:-mobi}
+      - SPRING_DATASOURCE_PASSWORD=${MOBI_AUTH_DB_PASS:-tiger}
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.OracleDialect
       - SPRING_FLYWAY_BASELINE_ON_MIGRATE=TRUE
-      - SPRING_FLYWAY_SCHEMAS=MOBI_AUTH
+      - SPRING_FLYWAY_SCHEMAS=MOBI
       - MOBI_JWT_SECRET=${MOBI_JWT_SECRET}
       - MOBI_JWT_EXPIRATION_HOURS=${MOBI_JWT_EXPIRATION_HOURS:-24}
       - MOBI_AUTH_CLIENT_ID=${MOBI_AUTH_CLIENT_ID}
@@ -37,16 +39,21 @@ services:
     container_name: mobi-db
     ports:
       - "1521:1521"
+    networks:
+      mobi-net:
+        aliases:
+          - mobi-db
     environment:
-      - ORACLE_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
-      - APP_USER=${MOBI_AUTH_DB_USER:-mobi_user}
-      - APP_USER_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+      - ORACLE_PASSWORD=${MOBI_AUTH_DB_PASS:-tiger}
+      - APP_USER=${MOBI_AUTH_DB_USER:-mobi}
+      - APP_USER_PASSWORD=${MOBI_AUTH_DB_PASS:-tiger}
     healthcheck:
-      test: [ "CMD-SHELL", "exit | sqlplus -L SYS/${ORACLE_PASSWORD}@localhost/FREEPDB1 AS SYSDBA" ]
+      test: [ "CMD-SHELL", "exit | sqlplus -L SYS/${MOBI_AUTH_DB_PASS}@localhost/FREEPDB1 AS SYSDBA" ]
       interval: 10s
-      timeout: 5s
-      retries: 10
-
+      timeout: 10s
+      retries: 5
+    env_file:
+      - .env
 networks:
   mobi-net:
     driver: bridge

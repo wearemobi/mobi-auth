@@ -48,6 +48,5 @@ CREATE TABLE mobi_audit_log
 -- 5. Strategic indexes for multi-tenant isolation
 CREATE INDEX idx_mobi_user_tenant_id ON mobi_user (tenant_id);
 CREATE INDEX idx_mobi_user_org_id ON mobi_user (org_id);
-CREATE INDEX idx_mobi_client_client_id ON mobi_client (client_id);
 CREATE INDEX idx_mobi_client_tenant_id ON mobi_client (tenant_id);
 CREATE INDEX idx_mobi_audit_principal ON mobi_audit_log (principal_id);
