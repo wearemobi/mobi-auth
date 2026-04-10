@@ -16,7 +16,7 @@ Unlike previous expeditions, this phase assumes a "Greenfield" environment:
 
 * **Data Policy:** No data migration will be performed. All production profiles will be new, ensuring every KV entry is born under the **Signature 2.0** standard.
 * **Database Engine:** Full transition from PostgreSQL to **Oracle DB**.
-    * **Dev:** Oracle XE (replacing PGSQL in docker-compose).
+    * **Dev:** Oracle Free (formerly Oracle Express) (replacing PGSQL in docker-compose).
     * **Prod:** Oracle Autonomous Database in OCI.
 * **Environment Injection:** Configuration of secrets in Cloudflare (Properties/Secrets) to inject `CLOUDFLARE_API_TOKEN`, `OCI_CREDENTIALS`, and the Oracle `DB_URL`.
 
@@ -32,9 +32,9 @@ Unlike previous expeditions, this phase assumes a "Greenfield" environment:
 ## Acceptance Criteria (Definition of Done)
 - [x] All stakeholders (or R&D) have reviewed the draft.
 - [x] The document is merged into the `main` branch under the `docs/` folder.
-- [ ] Production Live: The account.wearemobi.com domain is publicly accessible with a valid certificate.
-- [ ] Handshake Success: A registration flow initiated with ?redirect_uri=https://test.mobi.bio successfully returns the user to said URL after profile creation.
-- [ ] Edge Confirmation: Users created in production appear instantaneously in the production KV Namespace.
+- [x] Production Live: The account.wearemobi.com domain is publicly accessible with a valid certificate.
+- [x] Handshake Success: A registration flow initiated with ?redirect_uri=https://test.mobi.bio successfully returns the user to said URL after profile creation.
+- [x] Edge Confirmation: Users created in production appear instantaneously in the production KV Namespace.
 
 ---
 Copyright © 2026 **M.O.B.I.™** (Machine Oriented Brilliant Ideas™)  
