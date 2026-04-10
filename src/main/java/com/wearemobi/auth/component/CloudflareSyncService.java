@@ -42,16 +42,19 @@ public class CloudflareSyncService {
 
     try {
       EdgeProfile profile = EdgeMapper.toEdgeProfile(user);
-      String uri = String.format("/accounts/%s/storage/kv/namespaces/%s/values/%s",
+      String uri =
+          String.format(
+              "/accounts/%s/storage/kv/namespaces/%s/values/%s",
               accountId, namespaceId, profile.slug());
 
-      restClient.put()
-              .uri(uri)
-              .header("Authorization", "Bearer " + apiToken)
-              .header("Content-Type", "application/json")
-              .body(profile)
-              .retrieve()
-              .toBodilessEntity();
+      restClient
+          .put()
+          .uri(uri)
+          .header("Authorization", "Bearer " + apiToken)
+          .header("Content-Type", "application/json")
+          .body(profile)
+          .retrieve()
+          .toBodilessEntity();
 
       log.info("[EDGE-SYNC] Successfully anchored profile [{}] to Cloudflare KV.", profile.slug());
     } catch (Exception e) {

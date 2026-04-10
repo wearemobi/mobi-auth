@@ -9,7 +9,7 @@ import java.util.UUID;
 public class ClientEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(columnDefinition = "RAW(16)")
   private UUID id;
 
   @Column(name = "client_id", unique = true, nullable = false)

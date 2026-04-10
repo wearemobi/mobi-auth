@@ -6,6 +6,8 @@ import com.wearemobi.auth.domain.ScimUserRequest;
 import com.wearemobi.auth.entity.UserEntity;
 import com.wearemobi.auth.event.UserRegisteredEvent;
 import com.wearemobi.auth.repository.UserRepository;
+import java.util.Set;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +15,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class OciIdentityService {
@@ -30,7 +29,8 @@ public class OciIdentityService {
   private final UserRepository userRepository; // Necesitamos guardar localmente
   private final ApplicationEventPublisher eventPublisher; // Necesitamos disparar el cañón
 
-  public OciIdentityService(UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
+  public OciIdentityService(
+      UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
     this.userRepository = userRepository;
     this.eventPublisher = eventPublisher;
   }
