@@ -1,0 +1,55 @@
+services:
+  mobi-auth:
+    build: .
+    container_name: mobi-auth
+    ports:
+      - "9090:9090"
+    networks:
+      - mobi-net
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-oci}
+      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@mobi-db:1521/FREEPDB1
+      - SPRING_DATASOURCE_USERNAME=${MOBI_AUTH_DB_USER:-mobi_user}
+      - SPRING_DATASOURCE_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.OracleDialect
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=TRUE
+      - SPRING_FLYWAY_SCHEMAS=MOBI_AUTH
+      - MOBI_JWT_SECRET=${MOBI_JWT_SECRET}
+      - MOBI_JWT_EXPIRATION_HOURS=${MOBI_JWT_EXPIRATION_HOURS:-24}
+      - MOBI_AUTH_CLIENT_ID=${MOBI_AUTH_CLIENT_ID}
+      - MOBI_AUTH_CLIENT_SECRET=${MOBI_AUTH_CLIENT_SECRET}
+      - MOBI_M2M_CLIENT_ID=${MOBI_M2M_CLIENT_ID}
+      - MOBI_M2M_CLIENT_SECRET=${MOBI_M2M_CLIENT_SECRET}
+      - MOBI_OCI_ISSUER_URI=${MOBI_OCI_ISSUER_URI}
+      - MOBI_OCI_SCIM_URL=${MOBI_OCI_SCIM_URL}
+      - MOBI_OCI_TOKEN_URI=${MOBI_OCI_TOKEN_URI}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_KV_NAMESPACE_ID=${CLOUDFLARE_KV_NAMESPACE_ID}
+    depends_on:
+      mobi-db:
+        condition: service_healthy
+    env_file:
+      - .env
+  mobi-db:
+    image: gvenzl/oracle-free:latest
+    container_name: mobi-db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+      - APP_USER=${MOBI_AUTH_DB_USER:-mobi_user}
+      - APP_USER_PASSWORD=${MOBI_AUTH_DB_PASS:-mobi_pass}
+    healthcheck:
+      test: [ "CMD-SHELL", "exit | sqlplus -L SYS/${ORACLE_PASSWORD}@localhost/FREEPDB1 AS SYSDBA" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  mobi-net:
+    driver: bridge
+
+volumes:
+  mobi_db_data:
