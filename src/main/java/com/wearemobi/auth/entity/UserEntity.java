@@ -12,7 +12,7 @@ import java.util.UUID;
 public class UserEntity {
 
   @Id
-  @Column(columnDefinition = "RAW(16)")
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
   @Column(unique = true, nullable = false)
