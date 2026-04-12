@@ -15,11 +15,12 @@ SUBNET_ID="ocid1.subnet.oc1.iad.aaaaaaaavoo3t574vgln4qvv6blagnt3qzexwja7k22ebewp
 AD_NAME="UQXG:US-ASHBURN-AD-1"
 IMAGE="iad.ocir.io/idv1cxg6und8/mobi-auth:v1.10"
 USERNAME="idv1cxg6und8/mobi-sandbox-dev-idd/carlos@wearemobi.com"
+# Nota de Robin: Mantenemos el URL público pero con la ACL ya abierta en la DB funcionará.
 DB_URL="jdbc:oracle:thin:@(description=(retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-ashburn-1.oraclecloud.com))(connect_data=(service_name=g723917ed8eefe4_mobisandboxoradb_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))"
 
 echo "📝 [ROBIN] Codificando credenciales y sellando el Manifiesto..."
 
-# 3. Constructor Python de Alta Precisión
+# 3. Constructor Python de Alta Precisión (Ajustado para inyectar el Password correctamente)
 python3 <<EOF
 import json
 import os
@@ -60,15 +61,20 @@ full_request = {
                 "CLOUDFLARE_KV_NAMESPACE_ID": os.getenv("CLOUDFLARE_KV_NAMESPACE_ID"),
                 "SPRING_DATASOURCE_URL": "$DB_URL",
                 "SPRING_DATASOURCE_USERNAME": "mobi",
+                "SPRING_DATASOURCE_PASSWORD": os.getenv("MOBI_AUTH_DB_PASS"),
                 "SPRING_PROFILES_ACTIVE": "oci",
-                "SERVER_PORT": "9090"
+                "SPRING_MVC_RELATIVE_REDIRECTS": "true",
+                "SERVER_PORT": "9090",
+                "SERVER_FORWARD_HEADERS_STRATEGY": "framework",
+                "SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES": ".*"
             }
         }
     ],
     "vnics": [
         {
             "subnetId": "$SUBNET_ID",
-            "isPublicIpAssigned": False
+            "isPublicIpAssigned": False,
+            "privateIp": "10.0.1.232"
         }
     ],
     "imagePullSecrets": [
