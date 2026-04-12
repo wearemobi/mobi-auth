@@ -63,10 +63,10 @@ full_request = {
                 "SPRING_DATASOURCE_USERNAME": "mobi",
                 "SPRING_DATASOURCE_PASSWORD": os.getenv("MOBI_AUTH_DB_PASS"),
                 "SPRING_PROFILES_ACTIVE": "oci",
-                "SPRING_MVC_RELATIVE_REDIRECTS": "true",
                 "SERVER_PORT": "9090",
                 "SERVER_FORWARD_HEADERS_STRATEGY": "framework",
-                "SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES": ".*"
+                "SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES": ".*",
+                "SPRING_MVC_RELATIVE_REDIRECTS": "true"
             }
         }
     ],

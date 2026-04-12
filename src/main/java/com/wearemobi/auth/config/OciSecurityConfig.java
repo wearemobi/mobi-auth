@@ -53,7 +53,10 @@ public class OciSecurityConfig {
     http.formLogin(
             form ->
                 // Jolly Roger B&W
-                form.loginPage("/login").defaultSuccessUrl("/home", true).permitAll())
+                form.loginPage("/login")
+                    .failureForwardUrl("/login?error")
+                    .defaultSuccessUrl("/home", true)
+                    .permitAll())
         .logout(LogoutConfigurer::permitAll);
 
     return http.authenticationProvider(ociAuthenticationProvider).build();

@@ -4,6 +4,7 @@ package com.wearemobi.auth.controller;
 import com.wearemobi.auth.component.OciIdentityService;
 import com.wearemobi.auth.component.OciTokenService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model; // <--- Importante
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,19 +31,21 @@ public class RegisterController {
       @RequestParam String displayName,
       @RequestParam String username,
       @RequestParam String password,
+      Model model,
       RedirectAttributes redirectAttributes) {
 
     try {
       String m2mToken = tokenService.getM2mToken();
-
       identityService.createUser(username, displayName, password, m2mToken);
 
       redirectAttributes.addFlashAttribute("message", "¡Welcome to the Crew! Sign in to start.");
-      return "redirect:/login";
+      return "redirect:login";
 
     } catch (Exception e) {
-      redirectAttributes.addFlashAttribute("error", "The sea is rough: " + e.getMessage());
-      return "redirect:/register";
+      model.addAttribute("error", e.getMessage());
+      model.addAttribute("displayName", displayName);
+      model.addAttribute("username", username);
+      return "register";
     }
   }
 }
